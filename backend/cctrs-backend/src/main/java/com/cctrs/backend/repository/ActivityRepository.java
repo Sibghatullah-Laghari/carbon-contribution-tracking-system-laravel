@@ -1,11 +1,13 @@
 package com.cctrs.backend.repository;
 
 import com.cctrs.backend.model.Activity;
+import com.cctrs.backend.repository.mapper.ActivityRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import java.util.List;
 
 @Repository
@@ -17,55 +19,68 @@ public class ActivityRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // 🔹 APPROVE ACTIVITY
+    public Activity save(Activity activity) {
+        String sql = "INSERT INTO activities (user_id, activity_type, points, status, created_at) VALUES (?, ?, ?, ?, ?)";
 
-    // 1️⃣ Save activity (USER submits activity)
-    public void save(Activity activity) {
-        String sql = """
-                INSERT INTO activities (user_id, activity_type, points, status)
-                VALUES (?, ?, ?, ?)
-                """;
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        jdbcTemplate.update(
-                sql,
-                activity.getUserId(),
-                activity.getActivityType(),
-                activity.getPoints(),
-                activity.getStatus()
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"ID"});
+            ps.setLong(1, activity.getUserId());
+            ps.setString(2, activity.getActivityType());
+            ps.setInt(3, activity.getPoints());
+            ps.setString(4, activity.getStatus());
+            ps.setObject(5, activity.getCreatedAt());
+            return ps;
+        }, keyHolder);
+
+        Long generatedId = keyHolder.getKeyAs(Long.class);
+        activity.setId(generatedId);
+
+        return activity;
+    }
+
+    public Activity findById(Long activityId) {
+        List<Activity> activities = jdbcTemplate.query(
+                "SELECT * FROM activities WHERE id = ?",
+                new ActivityRowMapper(),
+                activityId
+        );
+        return activities.isEmpty() ? null : activities.get(0);
+    }
+
+    public List<Activity> findAll() {
+        return jdbcTemplate.query(
+                "SELECT * FROM activities",
+                new ActivityRowMapper()
         );
     }
 
-    // 2️⃣ Get activities by user
     public List<Activity> findByUserId(Long userId) {
-        String sql = "SELECT * FROM activities WHERE user_id = ?";
-
-        return jdbcTemplate.query(sql, this::mapRowToActivity, userId);
+        return jdbcTemplate.query(
+                "SELECT * FROM activities WHERE user_id = ?",
+                new ActivityRowMapper(),
+                userId
+        );
     }
 
-    // 3️⃣ Admin: get all pending activities
-    public List<Activity> findPendingActivities() {
-        String sql = "SELECT * FROM activities WHERE status = 'PENDING'";
-        return jdbcTemplate.query(sql, this::mapRowToActivity);
+    public List<Activity> findByStatus(String status) {
+        return jdbcTemplate.query(
+                "SELECT * FROM activities WHERE status = ? ORDER BY created_at DESC",
+                new ActivityRowMapper(),
+                status
+        );
     }
 
-    // 4️⃣ Admin: approve activity
-    public void approveActivity(Long id) {
-        String sql = "UPDATE activities SET status = 'APPROVED' WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+    public void updateStatus(Long activityId, String status) {
+        jdbcTemplate.update(
+                "UPDATE activities SET status = ? WHERE id = ?",
+                status,
+                activityId
+        );
     }
 
-
-
-
-    // 🔁 Row mapper
-    private Activity mapRowToActivity(ResultSet rs, int rowNum) throws SQLException {
-        Activity activity = new Activity();
-        activity.setId(rs.getLong("id"));
-        activity.setUserId(rs.getLong("user_id"));
-        activity.setActivityType(rs.getString("activity_type"));
-        activity.setPoints(rs.getInt("points"));
-        activity.setStatus(rs.getString("status"));
-        activity.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        return activity;
+    public List<Activity> getActivitiesByUser(Long userId) {
+        return findByUserId(userId);
     }
 }

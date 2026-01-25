@@ -7,7 +7,7 @@ public class Activity {
     private Long id;
     private Long userId;
     private String activityType;
-    private int points;
+    private Integer points;
     private String status; // PENDING / APPROVED
     private LocalDateTime createdAt;
 
@@ -16,7 +16,7 @@ public class Activity {
     }
 
     // Parameterized constructor
-    public Activity(Long userId, String activityType, int points, String status, LocalDateTime createdAt) {
+    public Activity(Long userId, String activityType, Integer points, String status, LocalDateTime createdAt) {
         this.userId = userId;
         this.activityType = activityType;
         this.points = points;
@@ -49,11 +49,11 @@ public class Activity {
         this.activityType = activityType;
     }
 
-    public int getPoints() {
+    public Integer getPoints() {
         return points;
     }
 
-    public void setPoints(int points) {
+    public void setPoints(Integer points) {
         this.points = points;
     }
 

@@ -3,54 +3,83 @@ package com.cctrs.backend.repository;
 import com.cctrs.backend.model.User;
 import com.cctrs.backend.repository.mapper.UserRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class UserRepository {
 
     private final JdbcTemplate jdbcTemplate;
-    private final UserRowMapper rowMapper = new UserRowMapper();
 
     public UserRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    // Save new user
-    public void save(User user) {
-        String sql = """
-            INSERT INTO users (name, username, email, password, role, total_points, active)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-        """;
+    public User save(User user) {
 
-        jdbcTemplate.update(
-                sql,
-                user.getName(),
-                user.getUsername(),
-                user.getEmail(),
-                user.getPassword(),
-                user.getRole(),
-                user.getTotalPoints(),
-                user.isActive()
+        String sql = "INSERT INTO users (name, email, username, role, points) VALUES (?, ?, ?, ?, ?)";
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"ID"});
+            ps.setString(1, user.getName());
+            ps.setString(2, user.getEmail());
+            ps.setString(3, user.getUsername());
+            ps.setString(4, user.getRole());
+            ps.setInt(5, user.getPoints());
+            return ps;
+        }, keyHolder);
+
+        Long generatedId = keyHolder.getKeyAs(Long.class);
+        user.setId(generatedId);
+
+        return user;
+    }
+
+    public List<User> findAll() {
+        return jdbcTemplate.query(
+                "SELECT * FROM users",
+                new UserRowMapper()
         );
     }
 
-    // Find all users
-    public List<User> findAll() {
-        return jdbcTemplate.query("SELECT * FROM users", rowMapper);
+    public User findById(Long id) {
+        List<User> users = jdbcTemplate.query(
+                "SELECT * FROM users WHERE id = ?",
+                new UserRowMapper(),
+                id
+        );
+        return users.isEmpty() ? null : users.get(0);
     }
 
-    // Find by username
-    public Optional<User> findByUsername(String username) {
-        String sql = "SELECT * FROM users WHERE username = ?";
-        List<User> users = jdbcTemplate.query(sql, rowMapper, username);
-        return users.stream().findFirst();
+    public User findByEmail(String email) {
+        List<User> users = jdbcTemplate.query(
+                "SELECT * FROM users WHERE email = ?",
+                new UserRowMapper(),
+                email
+        );
+        return users.isEmpty() ? null : users.get(0);
     }
 
-    // Count users
-    public int count() {
-        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM users", Integer.class);
+    public User findByUsername(String username) {
+        List<User> users = jdbcTemplate.query(
+                "SELECT * FROM users WHERE username = ?",
+                new UserRowMapper(),
+                username
+        );
+        return users.isEmpty() ? null : users.get(0);
+    }
+
+    public void updatePoints(Long userId, int points) {
+        jdbcTemplate.update(
+                "UPDATE users SET points = ? WHERE id = ?",
+                points,
+                userId
+        );
     }
 }

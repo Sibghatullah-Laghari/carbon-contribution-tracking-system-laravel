@@ -5,7 +5,6 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 public class UserRowMapper implements RowMapper<User> {
 
@@ -13,20 +12,17 @@ public class UserRowMapper implements RowMapper<User> {
     public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 
         User user = new User();
-
         user.setId(rs.getLong("id"));
         user.setName(rs.getString("name"));
-        user.setUsername(rs.getString("username"));
         user.setEmail(rs.getString("email"));
-        user.setPassword(rs.getString("password"));
+        user.setUsername(rs.getString("username"));
         user.setRole(rs.getString("role"));
-        user.setTotalPoints(rs.getInt("total_points"));
-        user.setActive(rs.getBoolean("active"));
-
-        if (rs.getTimestamp("created_at") != null) {
-            user.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        }
+        user.setPoints(rs.getInt("points"));
+        user.setCreatedAt(rs.getTimestamp("created_at") != null ?
+                rs.getTimestamp("created_at").toLocalDateTime() : null);
 
         return user;
     }
 }
+
+
