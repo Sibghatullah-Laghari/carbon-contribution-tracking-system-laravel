@@ -2,8 +2,14 @@ package com.cctrs.backend.dto;
 
 public class ActivityRequestDto {
 
+    @jakarta.validation.constraints.NotNull(message = "User ID is required")
     private Long userId;
+
+    @jakarta.validation.constraints.NotBlank(message = "Activity type is required")
     private String activityType;
+
+    @jakarta.validation.constraints.NotNull(message = "Points are required")
+    @jakarta.validation.constraints.Min(value = 0, message = "Points must be non-negative")
     private Integer points;
 
     // ✅ Default constructor (VERY IMPORTANT for JSON deserialization)

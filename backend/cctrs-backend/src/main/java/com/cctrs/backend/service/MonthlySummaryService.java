@@ -1,9 +1,7 @@
 package com.cctrs.backend.service;
 
 import com.cctrs.backend.model.Activity;
-import com.cctrs.backend.model.User;
 import com.cctrs.backend.repository.ActivityRepository;
-import com.cctrs.backend.repository.MonthlySummaryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -13,24 +11,23 @@ import java.time.YearMonth;
 import java.util.List;
 
 /**
- * MonthlySummaryService handles monthly activity summaries and status calculations
+ * MonthlySummaryService handles monthly activity summaries and status
+ * calculations
  */
 @Service
 public class MonthlySummaryService {
 
     private static final Logger logger = LoggerFactory.getLogger(MonthlySummaryService.class);
     private final ActivityRepository activityRepository;
-    private final MonthlySummaryRepository monthlySummaryRepository;
 
-    public MonthlySummaryService(ActivityRepository activityRepository,
-                                  MonthlySummaryRepository monthlySummaryRepository) {
+    public MonthlySummaryService(ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
-        this.monthlySummaryRepository = monthlySummaryRepository;
     }
 
     /**
      * Calculate monthly status for a user
-     * @param userId User ID
+     * 
+     * @param userId    User ID
      * @param yearMonth Year-Month in format YYYY-MM
      * @return Total approved points for the month
      */

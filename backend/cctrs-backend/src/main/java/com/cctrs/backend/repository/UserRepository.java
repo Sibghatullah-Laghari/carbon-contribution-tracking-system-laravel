@@ -26,7 +26,7 @@ public class UserRepository {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         jdbcTemplate.update(connection -> {
-            PreparedStatement ps = connection.prepareStatement(sql, new String[]{"ID"});
+            PreparedStatement ps = connection.prepareStatement(sql, new String[] { "ID" });
             ps.setString(1, user.getName());
             ps.setString(2, user.getEmail());
             ps.setString(3, user.getUsername());
@@ -44,16 +44,14 @@ public class UserRepository {
     public List<User> findAll() {
         return jdbcTemplate.query(
                 "SELECT * FROM users",
-                new UserRowMapper()
-        );
+                new UserRowMapper());
     }
 
     public User findById(Long id) {
         List<User> users = jdbcTemplate.query(
                 "SELECT * FROM users WHERE id = ?",
                 new UserRowMapper(),
-                id
-        );
+                id);
         return users.isEmpty() ? null : users.get(0);
     }
 
@@ -61,8 +59,7 @@ public class UserRepository {
         List<User> users = jdbcTemplate.query(
                 "SELECT * FROM users WHERE email = ?",
                 new UserRowMapper(),
-                email
-        );
+                email);
         return users.isEmpty() ? null : users.get(0);
     }
 
@@ -70,8 +67,7 @@ public class UserRepository {
         List<User> users = jdbcTemplate.query(
                 "SELECT * FROM users WHERE username = ?",
                 new UserRowMapper(),
-                username
-        );
+                username);
         return users.isEmpty() ? null : users.get(0);
     }
 
@@ -79,7 +75,35 @@ public class UserRepository {
         jdbcTemplate.update(
                 "UPDATE users SET points = ? WHERE id = ?",
                 points,
-                userId
-        );
+                userId);
+    }
+
+    /**
+     * Find top users by points for leaderboard
+     * 
+     * @param limit Number of top users to return
+     * @return List of top users ordered by points DESC
+     */
+    public List<User> findTopUsersByPoints(int limit) {
+        return jdbcTemplate.query(
+                "SELECT * FROM users ORDER BY points DESC LIMIT ?",
+                new UserRowMapper(),
+                limit);
+    }
+
+    public User findByVerificationToken(String token) {
+        List<User> users = jdbcTemplate.query(
+                "SELECT * FROM users WHERE verification_token = ?",
+                new UserRowMapper(),
+                token);
+        return users.isEmpty() ? null : users.get(0);
+    }
+
+    public void updateVerificationToken(Long userId, String token) {
+        jdbcTemplate.update("UPDATE users SET verification_token = ? WHERE id = ?", token, userId);
+    }
+
+    public void verifyEmail(Long userId) {
+        jdbcTemplate.update("UPDATE users SET email_verified = TRUE, verification_token = NULL WHERE id = ?", userId);
     }
 }

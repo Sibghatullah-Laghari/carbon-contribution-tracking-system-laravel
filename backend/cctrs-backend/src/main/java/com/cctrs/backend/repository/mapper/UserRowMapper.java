@@ -16,13 +16,14 @@ public class UserRowMapper implements RowMapper<User> {
         user.setName(rs.getString("name"));
         user.setEmail(rs.getString("email"));
         user.setUsername(rs.getString("username"));
+        user.setPassword(rs.getString("password"));
         user.setRole(rs.getString("role"));
         user.setPoints(rs.getInt("points"));
-        user.setCreatedAt(rs.getTimestamp("created_at") != null ?
-                rs.getTimestamp("created_at").toLocalDateTime() : null);
+        user.setVerificationToken(rs.getString("verification_token"));
+        user.setEmailVerified(rs.getBoolean("email_verified"));
+        user.setCreatedAt(
+                rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null);
 
         return user;
     }
 }
-
-

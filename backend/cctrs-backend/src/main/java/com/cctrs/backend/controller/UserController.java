@@ -1,5 +1,6 @@
 package com.cctrs.backend.controller;
 
+import com.cctrs.backend.dto.ApiResponse;
 import com.cctrs.backend.dto.UserRequestDto;
 import com.cctrs.backend.model.User;
 import com.cctrs.backend.service.UserService;
@@ -28,35 +29,21 @@ public class UserController {
 
     /**
      * Create a new user in the system
+     * 
      * @param dto User request containing name, email, username, and optional role
      * @return Created user with generated ID
      *
-     * Validation:
-     * - Name: required, not empty
-     * - Email: required, valid format, unique
-     * - Username: required, unique, not empty
-     * - Role: optional, defaults to "USER"
+     *         Validation:
+     *         - Name: required, not empty
+     *         - Email: required, valid format, unique
+     *         - Username: required, unique, not empty
+     *         - Role: optional, defaults to "USER"
      *
      * @throws IllegalArgumentException if validation fails
      */
+    @io.swagger.v3.oas.annotations.Operation(summary = "Create a new user")
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody UserRequestDto dto) {
-
-        // Validate required fields
-        if (dto.getName() == null || dto.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Name is required");
-        }
-        if (dto.getEmail() == null || dto.getEmail().trim().isEmpty()) {
-            throw new IllegalArgumentException("Email is required");
-        }
-        if (dto.getUsername() == null || dto.getUsername().trim().isEmpty()) {
-            throw new IllegalArgumentException("Username is required");
-        }
-
-        // Validate email format
-        if (!isValidEmail(dto.getEmail())) {
-            throw new IllegalArgumentException("Invalid email format");
-        }
+    public ResponseEntity<ApiResponse<User>> createUser(@jakarta.validation.Valid @RequestBody UserRequestDto dto) {
 
         User user = new User();
         user.setName(dto.getName());
@@ -67,41 +54,35 @@ public class UserController {
 
         User savedUser = userService.createUser(user);
         logger.info("User created with ID: {}", savedUser.getId());
-        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.created("User created successfully", savedUser));
     }
 
     /**
      * Retrieve all users from the system
+     * 
      * @return List of all users
      */
     @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
+    public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
         List<User> users = userService.getAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(ApiResponse.success("All users retrieved", users));
     }
 
     /**
      * Retrieve a specific user by ID
+     * 
      * @param id User ID
      * @return User object if found
      * @throws ResponseEntity.notFound() if user doesn't exist
      */
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<User>> getUser(@PathVariable Long id) {
         User user = userService.getUserById(id);
         if (user == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ApiResponse.error("User not found", 404));
         }
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(ApiResponse.success("User retrieved", user));
     }
 
-    /**
-     * Validate email format using regex
-     * RFC 5322 simplified validation
-     * @param email Email to validate
-     * @return true if email is valid, false otherwise
-     */
-    private boolean isValidEmail(String email) {
-        return email != null && email.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
-    }
 }

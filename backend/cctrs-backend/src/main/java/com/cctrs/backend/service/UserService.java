@@ -70,4 +70,20 @@ public class UserService {
         int newPoints = user.getPoints() + pointsToAdd;
         userRepository.updatePoints(userId, newPoints);
     }
+
+    /**
+     * Calculate badge level based on total points
+     * 
+     * @param points Total points
+     * @return Badge level: "Bronze", "Silver", or "Gold"
+     */
+    public String calculateBadge(int points) {
+        if (points > 300) {
+            return "Gold";
+        } else if (points > 100) {
+            return "Silver";
+        } else {
+            return "Bronze";
+        }
+    }
 }

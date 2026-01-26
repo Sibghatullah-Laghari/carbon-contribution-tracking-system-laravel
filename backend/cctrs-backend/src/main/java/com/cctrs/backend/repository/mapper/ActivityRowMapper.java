@@ -17,8 +17,14 @@ public class ActivityRowMapper implements RowMapper<Activity> {
         activity.setActivityType(rs.getString("activity_type"));
         activity.setPoints(rs.getInt("points"));
         activity.setStatus(rs.getString("status"));
-        activity.setCreatedAt(rs.getTimestamp("created_at") != null ?
-                rs.getTimestamp("created_at").toLocalDateTime() : null);
+        activity.setRejectionReason(rs.getString("rejection_reason"));
+        activity.setProofImage(rs.getString("proof_image"));
+        activity.setLatitude(rs.getObject("latitude") != null ? rs.getDouble("latitude") : null);
+        activity.setLongitude(rs.getObject("longitude") != null ? rs.getDouble("longitude") : null);
+        activity.setProofTime(
+                rs.getTimestamp("proof_time") != null ? rs.getTimestamp("proof_time").toLocalDateTime() : null);
+        activity.setCreatedAt(
+                rs.getTimestamp("created_at") != null ? rs.getTimestamp("created_at").toLocalDateTime() : null);
 
         return activity;
     }

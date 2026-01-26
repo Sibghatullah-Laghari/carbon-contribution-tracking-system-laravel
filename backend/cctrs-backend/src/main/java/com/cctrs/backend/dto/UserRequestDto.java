@@ -3,10 +3,20 @@ package com.cctrs.backend.dto;
 public class UserRequestDto {
 
     private Long id;
+
+    @jakarta.validation.constraints.NotBlank(message = "Name is required")
     private String name;
+
+    @jakarta.validation.constraints.NotBlank(message = "Email is required")
+    @jakarta.validation.constraints.Email(message = "Invalid email format")
     private String email;
+
+    @jakarta.validation.constraints.NotBlank(message = "Username is required")
     private String username;
+
     private String role;
+
+    @jakarta.validation.constraints.Min(value = 0, message = "Points cannot be negative")
     private Integer points;
 
     // ✅ Default constructor (VERY IMPORTANT for JSON)
