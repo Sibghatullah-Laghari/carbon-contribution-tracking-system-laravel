@@ -1,6 +1,7 @@
 package com.cctrs.backend.controller;
 
 import com.cctrs.backend.model.Activity;
+import com.cctrs.backend.model.ActivityType;
 import com.cctrs.backend.model.User;
 import com.cctrs.backend.repository.UserRepository;
 import com.cctrs.backend.service.ActivityService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 /**
  * ActivityController handles all activity-related API endpoints
@@ -71,12 +73,30 @@ public class ActivityController {
 
         logger.info("User {} creating activity: {}", email, requestDto.getActivityType());
 
+        String activityType = requestDto.getActivityType();
+        if (activityType != null) {
+            try {
+                activityType = ActivityType.valueOf(activityType).getDisplayName();
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+
+        Integer points = requestDto.getPoints();
+        if (points == null) {
+            points = 0;
+        }
+
+        Integer declaredQuantity = requestDto.getDeclaredQuantity();
+        if (declaredQuantity == null) {
+            declaredQuantity = 1;
+        }
+
         Activity activity = new Activity();
         activity.setUserId(user.getId());
-        activity.setActivityType(requestDto.getActivityType());
-        activity.setPoints(requestDto.getPoints());
+        activity.setActivityType(activityType);
+        activity.setPoints(points);
         activity.setDescription(requestDto.getDescription());
-        activity.setDeclaredQuantity(requestDto.getDeclaredQuantity());
+        activity.setDeclaredQuantity(declaredQuantity);
         activity.setCreatedAt(LocalDateTime.now());
 
         // Use declareActivity for the new flow (Stage 1)
@@ -93,9 +113,10 @@ public class ActivityController {
     @PostMapping("/{id}/proof")
     public ResponseEntity<ApiResponse<String>> submitProof(
             @PathVariable Long id,
-            @RequestParam String proofImage,
-            @RequestParam Double latitude,
-            @RequestParam Double longitude) {
+            @RequestParam(required = false) String proofImage,
+            @RequestParam(required = false) Double latitude,
+            @RequestParam(required = false) Double longitude,
+            @RequestBody(required = false) Map<String, Object> body) {
 
         // Extract user from JWT
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -115,7 +136,32 @@ public class ActivityController {
         // Best to fetch activity here or pass owner ID to service to verify.
         // Let's pass user.getId() to service to verify ownership.
 
-        activityService.submitProof(id, user.getId(), proofImage, latitude, longitude, LocalDateTime.now());
+        String resolvedProofImage = proofImage;
+        Double resolvedLatitude = latitude;
+        Double resolvedLongitude = longitude;
+
+        if (body != null) {
+            if (resolvedProofImage == null && body.get("proofImage") != null) {
+                resolvedProofImage = body.get("proofImage").toString();
+            }
+            if (resolvedLatitude == null && body.get("latitude") != null) {
+                Object value = body.get("latitude");
+                resolvedLatitude = value instanceof Number ? ((Number) value).doubleValue()
+                        : Double.valueOf(value.toString());
+            }
+            if (resolvedLongitude == null && body.get("longitude") != null) {
+                Object value = body.get("longitude");
+                resolvedLongitude = value instanceof Number ? ((Number) value).doubleValue()
+                        : Double.valueOf(value.toString());
+            }
+        }
+
+        if (resolvedProofImage == null || resolvedLatitude == null || resolvedLongitude == null) {
+            throw new IllegalArgumentException("proofImage, latitude, and longitude are required");
+        }
+
+        activityService.submitProof(id, user.getId(), resolvedProofImage, resolvedLatitude, resolvedLongitude,
+                LocalDateTime.now());
 
         return ResponseEntity.ok(ApiResponse.success("Proof submitted successfully", "PROOF_SUBMITTED"));
     }

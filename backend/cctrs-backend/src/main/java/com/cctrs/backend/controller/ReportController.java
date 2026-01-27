@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
  * ReportController handles monthly report endpoints
  */
 @RestController
-@RequestMapping("/report")
+@RequestMapping({ "/report", "/api/report" })
 public class ReportController {
 
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ReportController.class);

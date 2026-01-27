@@ -1,7 +1,6 @@
 package com.cctrs.backend.dto;
 
 public class RejectionRequest {
-    @jakarta.validation.constraints.NotBlank(message = "Reason is required")
     private String reason;
 
     public RejectionRequest() {
