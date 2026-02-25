@@ -139,4 +139,34 @@ public class ActivityRepository {
         String sql = "UPDATE activities SET proof_image = ?, latitude = ?, longitude = ?, proof_time = ?, status = 'PROOF_SUBMITTED' WHERE id = ?";
         jdbcTemplate.update(sql, proofImage, lat, lon, proofTime, activityId);
     }
+
+    /**
+     * Record the journey start GPS point and timestamp.
+     * Sets status to JOURNEY_STARTED.
+     */
+    public void saveJourneyStart(Long activityId, Double startLat, Double startLon, java.time.LocalDateTime startTime) {
+        String sql = "UPDATE activities SET start_lat = ?, start_lon = ?, start_time = ?, status = 'JOURNEY_STARTED' WHERE id = ?";
+        jdbcTemplate.update(sql, startLat, startLon, startTime, activityId);
+    }
+
+    /**
+     * Record the journey end GPS point + calculated distance/speed + gps_valid flag.
+     * If GPS valid → status = GPS_VALID, else FLAGGED.
+     */
+    public void saveJourneyEnd(Long activityId, Double endLat, Double endLon, java.time.LocalDateTime endTime,
+                               Double distanceKm, Double speedKmh, boolean gpsValid) {
+        String newStatus = gpsValid ? "GPS_VALID" : "FLAGGED";
+        String sql = "UPDATE activities SET end_lat = ?, end_lon = ?, end_time = ?, " +
+                     "calculated_distance_km = ?, calculated_speed_kmh = ?, gps_valid = ?, " +
+                     "status = ? WHERE id = ?";
+        jdbcTemplate.update(sql, endLat, endLon, endTime, distanceKm, speedKmh, gpsValid, newStatus, activityId);
+    }
+
+    /**
+     * Submit ticket photo after GPS validation – sets status to PROOF_SUBMITTED.
+     */
+    public void submitTicketPhoto(Long activityId, String proofImage) {
+        String sql = "UPDATE activities SET proof_image = ?, status = 'PROOF_SUBMITTED' WHERE id = ?";
+        jdbcTemplate.update(sql, proofImage, activityId);
+    }
 }

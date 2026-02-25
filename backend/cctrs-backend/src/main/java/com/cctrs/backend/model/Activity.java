@@ -79,3 +79,4 @@ public class Activity {
     public LocalDateTime getProofTime() { return proofTime; }
     public void setProofTime(LocalDateTime proofTime) { this.proofTime = proofTime; }
 }
+

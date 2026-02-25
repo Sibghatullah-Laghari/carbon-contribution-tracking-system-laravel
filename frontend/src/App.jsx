@@ -15,6 +15,7 @@ import Badges from './pages/dashboard/Badges';
 import Leaderboard from './pages/dashboard/Leaderboard';
 import Admin from './pages/dashboard/Admin';
 import StartProof from './pages/StartProof';
+import Journey from './pages/public/Journey';
 
 const PrivateRoute = ({ children }) => {
   const token = localStorage.getItem('token');
@@ -37,6 +38,7 @@ function App() {
           <Route path="/verify-otp" element={<VerifyOtp />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/journey" element={<Journey />} />
 
           <Route
               path="/"

@@ -51,7 +51,17 @@ const SubmitActivity = () => {
         throw new Error('Activity created but ID not returned');
       }
 
-      // Start proof session
+      // Route PUBLIC_TRANSPORT to the GPS journey flow
+      if (formData.activityType === 'PUBLIC_TRANSPORT') {
+        sessionStorage.setItem('journeySession', JSON.stringify({
+          activityId,
+          declaredKm: parseFloat(formData.quantity)
+        }));
+        navigate('/journey', { state: { activityId, declaredKm: parseFloat(formData.quantity) } });
+        return;
+      }
+
+      // For all other activity types → start proof session
       const proofRes = await api.post(`/api/proof/start?activityId=${activityId}`);
       const proofData = proofRes?.data?.data || proofRes?.data;
       const proofId = proofData?.id || proofData?.proofId;
