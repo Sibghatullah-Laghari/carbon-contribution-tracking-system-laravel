@@ -169,13 +169,15 @@ public class EmailService {
 
     private void validateMailConfiguration(String fromEmail, JavaMailSender sender) {
         if (sender instanceof JavaMailSenderImpl mailSenderImpl) {
-            if (mailSenderImpl.getHost() == null || mailSenderImpl.getHost().trim().isEmpty()) {
+            String host = mailSenderImpl.getHost();
+            if (host == null || host.trim().isEmpty()) {
                 logger.warn("Mail host is not configured. Set spring.mail.host.");
             }
             if (mailSenderImpl.getPort() == 0) {
                 logger.warn("Mail port is not configured. Set spring.mail.port.");
             }
-            if (mailSenderImpl.getUsername() == null || mailSenderImpl.getUsername().trim().isEmpty()) {
+            String username = mailSenderImpl.getUsername();
+            if (username == null || username.trim().isEmpty()) {
                 logger.warn("Mail username is not configured. Set spring.mail.username.");
             }
         } else if (fromEmail == null || fromEmail.trim().isEmpty()) {

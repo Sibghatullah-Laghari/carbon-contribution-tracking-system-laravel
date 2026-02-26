@@ -1,0 +1,61 @@
+# ===============================
+# PRODUCTION PROFILE — Supabase PostgreSQL
+# Activated by: SPRING_PROFILES_ACTIVE=prod
+# Requires env vars: DB_URL, DB_USER, DB_PASS, SMTP_USERNAME, SMTP_PASSWORD
+# ===============================
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: ${SPRING_DATASOURCE_DRIVER:org.postgresql.Driver}
+
+  # Run schema.sql on startup — compatible with both H2 (dev) and PostgreSQL (prod)
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    database-platform: ${SPRING_JPA_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
+    show-sql: false
+
+  # Disable H2 console in production
+  h2:
+    console:
+      enabled: false
+
+  # Mail — reads from env vars (same credentials as dev)
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_USERNAME}
+    password: ${SMTP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+app:
+  mail:
+    from: ${SMTP_USERNAME}
+
+# ===============================
+# SERVER
+# ===============================
+server:
+  port: ${PORT:8080}
+
+# ===============================
+# LOGGING
+# ===============================
+logging:
+  level:
+    root: INFO
+    com.cctrs.backend: INFO
+    org.springframework: WARN

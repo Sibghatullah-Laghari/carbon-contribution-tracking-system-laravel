@@ -42,3 +42,7 @@ logs/
 *.log
 hs_err_pid*
 replay_pid*
+
+# H2 local database files
+data/
+backend/cctrs-backend/data/

@@ -2,6 +2,7 @@ package com.cctrs.backend.repository.mapper;
 
 import com.cctrs.backend.model.Activity;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.lang.NonNull;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,7 +10,7 @@ import java.sql.SQLException;
 public class ActivityRowMapper implements RowMapper<Activity> {
 
     @Override
-    public Activity mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Activity mapRow(@NonNull ResultSet rs, int rowNum) throws SQLException {
 
         Activity activity = new Activity();
         activity.setId(rs.getLong("id"));
