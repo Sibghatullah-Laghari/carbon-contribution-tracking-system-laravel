@@ -36,7 +36,11 @@ export default function Login() {
       if (resData.role === "ADMIN") {
         navigate("/admin-cctrs-2024");
       } else {
-        navigate("/dashboard");
+        if (resData.role === "ADMIN") {
+          navigate("/admin-cctrs-2024");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (err) {
       setError(err?.response?.data?.message || err?.message || "Login failed");
