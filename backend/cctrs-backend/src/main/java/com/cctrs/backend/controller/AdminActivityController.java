@@ -1,5 +1,6 @@
 package com.cctrs.backend.controller;
 
+import com.cctrs.backend.dto.AdminActivityDto;
 import com.cctrs.backend.dto.ApiResponse;
 import com.cctrs.backend.model.Activity;
 import com.cctrs.backend.dto.RejectionRequest;
@@ -26,9 +27,9 @@ public class AdminActivityController {
      */
     @io.swagger.v3.oas.annotations.Operation(summary = "Get all activities for admin review")
     @GetMapping
-    public ResponseEntity<ApiResponse<List<Activity>>> getAllActivitiesForAdmin() {
+    public ResponseEntity<ApiResponse<List<AdminActivityDto>>> getAllActivitiesForAdmin() {
         logger.info("Admin fetching all activities for review");
-        List<Activity> activities = activityService.getAllActivities();
+        List<AdminActivityDto> activities = activityService.getAllActivitiesWithUser();
         return ResponseEntity.ok(ApiResponse.success("All activities retrieved for admin", activities));
     }
 
@@ -67,5 +68,20 @@ public class AdminActivityController {
         activityService.rejectActivity(id, reason);
         return ResponseEntity.ok(
                 ApiResponse.success("Activity rejected and user notified", null));
+    }
+
+    /**
+     * Admin permanently deletes an activity.
+     * Path: DELETE /admin/activities/{id}
+     */
+    @io.swagger.v3.oas.annotations.Operation(summary = "Delete an activity (admin-only)")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteActivity(@PathVariable Long id) {
+        if (id == null || id <= 0) {
+            throw new IllegalArgumentException("Valid activity ID is required");
+        }
+        logger.info("Admin deleting activity ID: {}", id);
+        activityService.deleteActivity(id);
+        return ResponseEntity.ok(ApiResponse.success("Activity deleted successfully", null));
     }
 }

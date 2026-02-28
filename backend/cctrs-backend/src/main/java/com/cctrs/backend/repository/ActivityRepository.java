@@ -1,7 +1,9 @@
 package com.cctrs.backend.repository;
 
+import com.cctrs.backend.dto.AdminActivityDto;
 import com.cctrs.backend.model.Activity;
 import com.cctrs.backend.repository.mapper.ActivityRowMapper;
+import com.cctrs.backend.repository.mapper.AdminActivityDtoRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -168,5 +170,25 @@ public class ActivityRepository {
     public void submitTicketPhoto(Long activityId, String proofImage) {
         String sql = "UPDATE activities SET proof_image = ?, status = 'PROOF_SUBMITTED' WHERE id = ?";
         jdbcTemplate.update(sql, proofImage, activityId);
+    }
+
+    /**
+     * Fetch all activities with submitting user's name/email via LEFT JOIN.
+     * Used by Admin Panel so the admin can identify each submitter.
+     */
+    public List<AdminActivityDto> findAllWithUser() {
+        String sql = "SELECT a.*, " +
+                "u.name AS user_name, u.email AS user_email, u.username AS user_username " +
+                "FROM activities a " +
+                "LEFT JOIN users u ON a.user_id = u.id " +
+                "ORDER BY a.created_at DESC";
+        return jdbcTemplate.query(sql, new AdminActivityDtoRowMapper());
+    }
+
+    /**
+     * Permanently delete an activity by ID (admin-only operation).
+     */
+    public void deleteById(Long activityId) {
+        jdbcTemplate.update("DELETE FROM activities WHERE id = ?", activityId);
     }
 }

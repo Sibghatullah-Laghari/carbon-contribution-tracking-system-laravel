@@ -1,5 +1,6 @@
 package com.cctrs.backend.service;
 
+import com.cctrs.backend.dto.AdminActivityDto;
 import com.cctrs.backend.model.Activity;
 import com.cctrs.backend.model.ActivityType;
 import com.cctrs.backend.model.User;
@@ -159,6 +160,29 @@ public class ActivityService {
 
     public List<Activity> getAllActivities() {
         return activityRepository.findAll();
+    }
+
+    /**
+     * Returns all activities enriched with the submitting user's name/email.
+     * Used exclusively by the Admin Panel.
+     */
+    public List<AdminActivityDto> getAllActivitiesWithUser() {
+        return activityRepository.findAllWithUser();
+    }
+
+    /**
+     * Admin deletes an activity permanently.
+     */
+    public void deleteActivity(Long activityId) {
+        if (activityId == null || activityId <= 0) {
+            throw new IllegalArgumentException("Valid activity ID is required");
+        }
+        Activity activity = activityRepository.findById(activityId);
+        if (activity == null) {
+            throw new IllegalArgumentException("Activity not found with ID: " + activityId);
+        }
+        activityRepository.deleteById(activityId);
+        logger.info("Admin deleted activity ID: {}", activityId);
     }
 
     public List<Activity> getActivitiesByUser(Long userId) {

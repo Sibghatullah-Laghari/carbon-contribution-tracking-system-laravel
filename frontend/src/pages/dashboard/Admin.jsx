@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../../api/axios';
 
 const STATUS_STYLES = {
@@ -25,10 +25,9 @@ const Admin = () => {
   const [preview, setPreview] = useState(null);
   const [rejectModal, setRejectModal] = useState(null);
   const [rejectReason, setRejectReason] = useState('');
+  const [deleteModal, setDeleteModal] = useState(null);
 
-  useEffect(() => { fetchActivities(); }, []);
-
-  const fetchActivities = async () => {
+  const fetchActivities = useCallback(async () => {
     try {
       setLoading(true); setError('');
       const res = await api.get('/admin/activities');
@@ -48,7 +47,9 @@ const Admin = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => { fetchActivities(); }, [fetchActivities]);
 
   const handleApprove = async (activityId) => {
     setActionLoading(activityId);
@@ -56,7 +57,7 @@ const Admin = () => {
       await api.put(`/admin/activities/approve/${activityId}`);
       setActivities(prev => prev.map(a => a.id === activityId ? { ...a, status: 'APPROVED' } : a));
     } catch (err) {
-      alert(err?.response?.data?.message || err?.message || 'Failed to approve');
+      setError(err?.response?.data?.message || err?.message || 'Failed to approve');
     } finally {
       setActionLoading(null);
     }
@@ -71,7 +72,22 @@ const Admin = () => {
       setRejectModal(null);
       setRejectReason('');
     } catch (err) {
-      alert(err?.response?.data?.message || err?.message || 'Failed to reject');
+      setError(err?.response?.data?.message || err?.message || 'Failed to reject');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteModal) return;
+    setActionLoading(deleteModal);
+    try {
+      await api.delete(`/admin/activities/${deleteModal}`);
+      setActivities(prev => prev.filter(a => a.id !== deleteModal));
+      setDeleteModal(null);
+    } catch (err) {
+      setError(err?.response?.data?.message || err?.message || 'Failed to delete activity');
+      setDeleteModal(null);
     } finally {
       setActionLoading(null);
     }
@@ -259,7 +275,7 @@ const Admin = () => {
         .reject-modal-body textarea {
           width: 100%; padding: 0.75rem; border: 1.5px solid #e2eeec;
           border-radius: 8px; font-size: 0.9rem; resize: vertical;
-          font-family: 'Inter', sans-serif; outline: none;
+          font-family: 'Inter', sans-serif; outline: none; box-sizing: border-box;
         }
         .reject-modal-body textarea:focus { border-color: #dc2626; }
         .reject-modal-footer {
@@ -285,6 +301,20 @@ const Admin = () => {
         .metric-pending .metric-value { color: #d97706; }
         .metric-approved .metric-value { color: #059669; }
         .metric-rejected .metric-value { color: #dc2626; }
+
+        .btn-delete-mini {
+          padding: 0.3rem 0.65rem; border-radius: 6px;
+          background: #fff0f0; color: #dc2626;
+          border: 1.5px solid #fecaca; font-size: 0.8rem;
+          cursor: pointer; transition: all 0.2s; line-height: 1;
+        }
+        .btn-delete-mini:hover:not(:disabled) { background: #fee2e2; border-color: #dc2626; }
+        .btn-delete-mini:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .arc-user-block { margin-top: 2px; }
+        .arc-user-name { font-size: 0.82rem; color: #444; font-weight: 600; }
+        .arc-user-handle { font-size: 0.78rem; color: #999; margin-left: 0.3rem; }
+        .arc-user-email { font-size: 0.78rem; color: #888; margin-top: 1px; }
       `}</style>
 
         <div className="dashboard-header" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
@@ -385,7 +415,7 @@ const Admin = () => {
                 );
 
                 return (
-                    <div key={activity.id || idx} className="activity-review-card">
+                    <div key={activity.id ?? `activity-${idx}`} className="activity-review-card">
                       {/* CARD HEADER */}
                       <div className="arc-header">
                         <div className="arc-header-left">
@@ -394,24 +424,33 @@ const Admin = () => {
                             <div className="arc-type">
                               {catInfo?.label || activity.activityType || 'Activity'}
                             </div>
-                            <div className="arc-user">
-                              👤 {activity.user?.username || activity.username || 'Unknown'}
-                              {(activity.user?.email || activity.userEmail) && (
-                                  <span style={{marginLeft:"0.5rem", opacity:0.7}}>
-                            — {activity.user?.email || activity.userEmail}
-                          </span>
+                            <div className="arc-user-block">
+                              <div className="arc-user-name">
+                                👤 {activity.userName || activity.userUsername || activity.user?.username || activity.username || 'Unknown User'}
+                                {activity.userUsername && activity.userName && (
+                                  <span className="arc-user-handle">@{activity.userUsername}</span>
+                                )}
+                              </div>
+                              {(activity.userEmail || activity.user?.email) && (
+                                <div className="arc-user-email">✉️ {activity.userEmail || activity.user?.email}</div>
                               )}
                             </div>
                           </div>
                         </div>
-                        <div style={{display:"flex", alignItems:"center", gap:"0.75rem"}}>
-                          <span className="arc-id">#{activity.id}</span>
+                        <div style={{display:"flex", alignItems:"center", gap:"0.5rem", flexWrap:"wrap", justifyContent:"flex-end"}}>
+                          <span className="arc-id" style={{fontFamily:"monospace", background:"#f0f4f3", padding:"0.2rem 0.55rem", borderRadius:"6px", border:"1px solid #e2eeec", fontSize:"0.78rem", color:"#555", fontWeight:"700"}}>Activity #<span>{activity.id}</span></span>
                           <span
                               className="arc-status"
                               style={{background: statusStyle.bg, color: statusStyle.color}}
                           >
                       {statusStyle.label}
                     </span>
+                          <button
+                              className="btn-delete-mini"
+                              onClick={() => setDeleteModal(activity.id)}
+                              disabled={isActionLoading}
+                              title="Delete this activity"
+                          >🗑️</button>
                         </div>
                       </div>
 
@@ -568,6 +607,36 @@ const Admin = () => {
                       disabled={actionLoading === rejectModal}
                   >
                     {actionLoading === rejectModal ? 'Rejecting...' : 'Confirm Reject'}
+                  </button>
+                </div>
+              </div>
+            </div>
+        )}
+
+        {/* DELETE CONFIRMATION MODAL */}
+        {deleteModal && (
+            <div className="modal-overlay" onClick={() => setDeleteModal(null)}>
+              <div className="modal-card" onClick={e => e.stopPropagation()}>
+                <div className="modal-header">
+                  <h3>🗑️ Delete Activity</h3>
+                  <button className="modal-close" onClick={() => setDeleteModal(null)}>×</button>
+                </div>
+                <div style={{padding:"1.25rem"}}>
+                  <p style={{color:"#333", fontSize:"0.9rem", marginBottom:"0.5rem"}}>
+                    Are you sure you want to permanently delete <strong>Activity #{deleteModal}</strong>?
+                  </p>
+                  <p style={{color:"#888", fontSize:"0.82rem"}}>
+                    This action cannot be undone. All associated data will be removed.
+                  </p>
+                </div>
+                <div className="reject-modal-footer">
+                  <button className="btn-cancel" onClick={() => setDeleteModal(null)}>Cancel</button>
+                  <button
+                      className="btn-reject-new"
+                      onClick={handleDeleteConfirm}
+                      disabled={actionLoading === deleteModal}
+                  >
+                    {actionLoading === deleteModal ? 'Deleting...' : '🗑️ Confirm Delete'}
                   </button>
                 </div>
               </div>
