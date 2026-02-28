@@ -79,12 +79,16 @@ const Badges = () => {
                 <p>{currentBadge.description}</p>
               </div>
             </div>
-            <div className="badge-points">{userPoints.toLocaleString()} Points</div>
+
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.35rem', marginBottom: '1.25rem' }}>
+              <span className="badge-points">{userPoints.toLocaleString()}</span>
+              <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--gray-500)' }}>points earned</span>
+            </div>
 
             {nextBadge && (
               <div className="badge-progress">
                 <div className="badge-progress-label">
-                  Progress to {nextBadge.name} ({nextBadge.minPoints.toLocaleString()} points)
+                  Progress to {nextBadge.name} — {nextBadge.minPoints.toLocaleString()} pts required
                 </div>
                 <div className="progress-track">
                   <div
@@ -93,7 +97,7 @@ const Badges = () => {
                   />
                 </div>
                 <div className="badge-progress-meta">
-                  {nextBadge.minPoints - userPoints} points to go
+                  {(nextBadge.minPoints - userPoints).toLocaleString()} pts to go
                 </div>
               </div>
             )}

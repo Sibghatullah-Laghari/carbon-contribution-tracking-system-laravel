@@ -141,33 +141,18 @@ export default function Recycling() {
 
         setStep("submitting");
         try {
-            // Submit scale photo as main proof
+            // The backend stores a single proof_image per activity and transitions
+            // status DECLARED → PROOF_SUBMITTED in one atomic update.
+            // Sending additional requests for the same activityId after the first
+            // succeeds would cause "Activity is not in DECLARED state" because the
+            // status is already PROOF_SUBMITTED. Submit only once using the scale
+            // photo, which is the primary weight-evidence for a recycling activity.
             const formData = new FormData();
             formData.append("proofImageFile", photos.scale.file);
             formData.append("latitude", String(location.lat || 0));
             formData.append("longitude", String(location.lon || 0));
             formData.append("proofTime", new Date().toISOString().replace("Z", ""));
             await api.post(`/api/activities/${activityId}/proof`, formData, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
-
-            // Submit before photo
-            const formData2 = new FormData();
-            formData2.append("proofImageFile", photos.before.file);
-            formData2.append("latitude", String(location.lat || 0));
-            formData2.append("longitude", String(location.lon || 0));
-            formData2.append("proofTime", new Date().toISOString().replace("Z", ""));
-            await api.post(`/api/activities/${activityId}/proof`, formData2, {
-                headers: { "Content-Type": "multipart/form-data" }
-            });
-
-            // Submit after photo
-            const formData3 = new FormData();
-            formData3.append("proofImageFile", photos.after.file);
-            formData3.append("latitude", String(location.lat || 0));
-            formData3.append("longitude", String(location.lon || 0));
-            formData3.append("proofTime", new Date().toISOString().replace("Z", ""));
-            await api.post(`/api/activities/${activityId}/proof`, formData3, {
                 headers: { "Content-Type": "multipart/form-data" }
             });
 
@@ -470,7 +455,7 @@ export default function Recycling() {
                 {/* ── STEP: REVIEW ── */}
                 {step === "review" && (
                     <div>
-                        <div style={{fontWeight:"700", color:"#333", marginBottom:"1rem", fontSize:"0.95rem"}}>
+                        <div style={{fontWeight:"800", color:"var(--primary-blue)", marginBottom:"1.25rem", fontSize:"1.1rem", borderBottom:"1px solid #e5e7eb", paddingBottom:"0.75rem"}}>
                             🔍 Review Your Submission
                         </div>
 
@@ -489,9 +474,9 @@ export default function Recycling() {
                             </div>
                         </div>
 
-                        <div className="info-card">
-                            <div style={{fontWeight:"700", color:"#2a9d8f", marginBottom:"0.75rem"}}>📊 Summary</div>
-                            <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0.5rem", fontSize:"0.875rem", color:"#444"}}>
+                        <div className="info-card" style={{marginBottom:"1.25rem"}}>
+                            <div style={{fontWeight:"700", color:"#2a9d8f", marginBottom:"0.875rem", fontSize:"0.9rem", textTransform:"uppercase", letterSpacing:"0.04em"}}>📊 Summary</div>
+                            <div style={{display:"grid", gridTemplateColumns:"1fr 1fr", gap:"0.65rem", fontSize:"0.875rem", color:"#444"}}>
                                 <div>♻️ Declared weight: <strong>{declaredKg} kg</strong></div>
                                 <div>📸 Photos: <strong style={{color:"#2a9d8f"}}>3 / 3 ✓</strong></div>
                                 <div>📍 Location: <strong style={{color: location.lat ? "#1a7a4a" : "#f4a261"}}>{location.lat ? "Captured ✓" : "Not captured"}</strong></div>
@@ -509,7 +494,7 @@ export default function Recycling() {
                             {step === "submitting" ? "Submitting..." : "✅ Submit Recycling Proof →"}
                         </button>
                         <button className="big-btn" style={{background:"#f0f4f3", color:"#666"}} onClick={() => setStep("scale")}>
-                            ← Go Back & Retake
+                            ← Go Back &amp; Retake
                         </button>
                     </div>
                 )}

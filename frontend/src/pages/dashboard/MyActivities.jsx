@@ -7,7 +7,8 @@ const STATUS_STYLES = {
   PENDING: { bg: '#fef3c7', color: '#d97706', label: 'Pending' },
   APPROVED: { bg: '#d1fae5', color: '#059669', label: 'Approved' },
   REJECTED: { bg: '#fee2e2', color: '#dc2626', label: 'Rejected' },
-  VERIFIED: { bg: '#dbeafe', color: '#2563eb', label: 'Verified' }
+  VERIFIED: { bg: '#dbeafe', color: '#2563eb', label: 'Verified' },
+  FLAGGED: { bg: '#ffe4e6', color: '#be123c', label: 'Flagged' }
 };
 
 const MyActivities = () => {
@@ -69,6 +70,15 @@ const MyActivities = () => {
       <div className="dashboard-header">
         <h1 className="dashboard-title">My Activities</h1>
         <p className="dashboard-subtitle">Track every submission from start to verification.</p>
+        <div style={{ marginTop: '0.75rem' }}>
+          <button
+            onClick={fetchActivities}
+            disabled={loading}
+            className="btn btn-primary"
+          >
+            {loading ? 'Refreshing...' : 'Refresh'}
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -107,8 +117,8 @@ const MyActivities = () => {
                     >
                       {statusStyle.label}
                     </span>
-                    <span className={`activity-verify ${activity.verified || activity.proofVerified ? 'verified' : ''}`}>
-                      {activity.verified || activity.proofVerified ? 'Verified' : 'Pending'}
+                    <span className={`activity-verify ${activity.status === 'APPROVED' ? 'verified' : ''}`}>
+                      {activity.status === 'APPROVED' ? 'Verified' : ''}
                     </span>
                   </div>
                 </div>

@@ -43,7 +43,7 @@ export default function Home() {
           border-radius: 8px; border: 2px solid #2a9d8f;
           transition: all 0.2s;
         }
-        .ghost-btn:hover { background: #2a9d8f; color: #fff; }
+        .ghost-btn:hover { background: #2a9d8f; color: #2a9d8f }
         .primary-btn {
           font-weight: 700; font-size: 0.9rem; color: #fff;
           text-decoration: none; padding: 0.55rem 1.4rem;

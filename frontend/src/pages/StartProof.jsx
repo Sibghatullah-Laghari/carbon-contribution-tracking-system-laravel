@@ -148,18 +148,22 @@ export default function StartProof() {
       return;
     }
     try {
-      for (let i = 0; i < photos.length; i++) {
-        setMessage(`Uploading photo ${i + 1} of ${photos.length}...`);
-        const formData = new FormData();
-        formData.append("proofImageFile", photos[i].file);
-        formData.append("latitude", String(location.lat));
-        formData.append("longitude", String(location.lon));
-        formData.append("proofTime", new Date().toISOString().replace("Z", ""));
-        await api.post(`/api/activities/${activityId}/proof`, formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-      }
-      setMessage("✅ All photos submitted successfully! Redirecting...");
+      // The backend stores a single proof_image per activity and transitions the
+      // status from DECLARED → PROOF_SUBMITTED in one atomic update.
+      // Sending more than one request for the same activityId would cause a
+      // "Activity is not in DECLARED state" error on the second call because
+      // the status is already PROOF_SUBMITTED after the first request.
+      // We therefore send exactly one API call using the first captured photo.
+      setMessage("Uploading proof...");
+      const formData = new FormData();
+      formData.append("proofImageFile", photos[0].file);
+      formData.append("latitude", String(location.lat));
+      formData.append("longitude", String(location.lon));
+      formData.append("proofTime", new Date().toISOString().replace("Z", ""));
+      await api.post(`/api/activities/${activityId}/proof`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      setMessage("✅ Proof submitted successfully! Redirecting...");
       sessionStorage.removeItem("proofSession");
       setTimeout(() => navigate("/my-activities"), 2000);
     } catch (err) {
@@ -359,16 +363,25 @@ export default function StartProof() {
                   <div className="success" style={{marginTop:"1rem"}}>{message}</div>
               )}
 
-              <button
-                  className="primary-btn"
-                  onClick={submitProof}
-                  style={{marginTop:"1rem"}}
-                  disabled={!proofId || photos.length === 0 || !location.lat || !location.lon}
-              >
-                {photos.length > 0
-                    ? `Submit ${photos.length} Photo${photos.length > 1 ? "s" : ""} →`
-                    : "Submit Verification"}
-              </button>
+              <div style={{display:"flex", gap:"0.75rem", marginTop:"1rem", flexWrap:"wrap"}}>
+                <button
+                    className="btn"
+                    onClick={() => navigate(-1)}
+                    style={{flex:"0 0 auto"}}
+                >
+                  ← Back
+                </button>
+                <button
+                    className="primary-btn"
+                    onClick={submitProof}
+                    style={{flex:"1 1 auto"}}
+                    disabled={!proofId || photos.length === 0 || !location.lat || !location.lon}
+                >
+                  {photos.length > 0
+                      ? `Submit Photo →`
+                      : "Submit Verification"}
+                </button>
+              </div>
             </div>
 
             {/* CAMERA PREVIEW */}

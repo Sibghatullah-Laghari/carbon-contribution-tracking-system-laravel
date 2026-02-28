@@ -1036,3 +1036,241 @@ a:hover {
     align-items: flex-start;
   }
 }
+
+/* ── Badges – summary card ── */
+.badge-current {
+  padding: 2rem;
+}
+
+.badge-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.badge-hero .badge-icon {
+  font-size: 3.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.badge-hero .badge-icon.active {
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.18));
+}
+
+.badge-hero h2 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 0.3rem;
+}
+
+.badge-hero p {
+  color: var(--gray-500);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.badge-points {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--primary-blue);
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.5px;
+}
+
+.badge-progress {
+  margin-top: 0.25rem;
+}
+
+.badge-progress-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 0.6rem;
+}
+
+.progress-track {
+  height: 10px;
+  background-color: var(--gray-200);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.badge-progress-meta {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+
+/* ── Badges – all badges grid ── */
+.badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.badge-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid var(--gray-200);
+  background-color: var(--white);
+  box-shadow: var(--shadow);
+  text-align: center;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.badge-card.unlocked {
+  border-color: #6ee7b7;
+  background-color: #f0fdf9;
+}
+
+.badge-card.active {
+  border-color: var(--primary-green);
+  background-color: #ecfdf5;
+  box-shadow: 0 0 0 3px rgba(42,157,143,0.12);
+}
+
+.badge-card .badge-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.badge-card.locked .badge-icon {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+.badge-card .badge-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 0.25rem;
+}
+
+.badge-card.locked .badge-name {
+  color: var(--gray-500) !important;
+}
+
+.badge-card .badge-meta {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  font-weight: 500;
+}
+
+.badge-card .badge-status {
+  margin-top: 0.35rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #059669;
+  background-color: #d1fae5;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+}
+
+/* ── Recycling – review photo grid ── */
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.review-photo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.review-photo img {
+  width: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+  aspect-ratio: 1;
+  border: 2px solid var(--gray-200);
+}
+
+.review-photo-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  text-align: center;
+}
+
+/* ── Form card – improved spacing ── */
+.form-card {
+  max-width: 780px;
+  padding: 2rem 2.25rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 0;
+}
+
+.form-input,
+.form-select {
+  margin-top: 0.4rem;
+  padding: 0.8rem 1rem;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  background-color: var(--white);
+  width: 100%;
+  transition: border-color 0.2s;
+}
+
+.form-input:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--primary-green);
+}
+
+.form-textarea {
+  margin-top: 0.4rem;
+  padding: 0.8rem 1rem;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--border-radius);
+  font-size: 0.95rem;
+  background-color: var(--white);
+  width: 100%;
+  resize: vertical;
+  transition: border-color 0.2s;
+}
+
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--primary-green);
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--gray-200);
+}

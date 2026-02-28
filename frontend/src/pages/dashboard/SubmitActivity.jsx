@@ -142,8 +142,8 @@ const SubmitActivity = () => {
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
-                    rows={3}
-                    placeholder="Add any additional details..."
+                    rows={4}
+                    placeholder="Add any additional details about your activity..."
                     className="form-textarea"
                 />
               </label>
