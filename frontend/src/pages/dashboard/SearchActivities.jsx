@@ -580,6 +580,9 @@ const SearchActivities = () => {
                             {(activity.userEmail) && (
                               <div className="arc-user-email">✉️ {activity.userEmail}</div>
                             )}
+                            {activity.userRank && (
+                              <div style={{ fontSize: '0.72rem', color: '#7c3aed', fontWeight: 700, marginTop: '0.15rem' }}>🏅 Rank #{activity.userRank}</div>
+                            )}
                           </div>
                         </div>
                       </div>

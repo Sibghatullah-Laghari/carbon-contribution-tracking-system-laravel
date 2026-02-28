@@ -62,7 +62,8 @@ const Leaderboard = () => {
                 <div className="podium-card">
                   <div className="podium-icon">🥈</div>
                   <div className="podium-tile podium-silver">
-                    <div className="podium-name">{users[1]?.username || users[1]?.name || 'User'}</div>
+                    <div className="podium-name">{users[1]?.name || users[1]?.username || 'User'}</div>
+                    {users[1]?.email && <div style={{ fontSize: '0.7rem', opacity: 0.75, marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>{users[1].email}</div>}
                     <div className="podium-score">
                       {(users[1]?.totalPoints || users[1]?.carbonPoints || users[1]?.points || 0).toLocaleString()} pts
                     </div>
@@ -74,8 +75,9 @@ const Leaderboard = () => {
                   <div className="podium-icon">🥇</div>
                   <div className="podium-tile podium-gold">
                     <div className="podium-name podium-name-strong">
-                      {users[0]?.username || users[0]?.name || 'User'}
+                      {users[0]?.name || users[0]?.username || 'User'}
                     </div>
+                    {users[0]?.email && <div style={{ fontSize: '0.7rem', opacity: 0.75, marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '140px' }}>{users[0].email}</div>}
                     <div className="podium-score podium-score-strong">
                       {(users[0]?.totalPoints || users[0]?.carbonPoints || users[0]?.points || 0).toLocaleString()} pts
                     </div>
@@ -87,8 +89,9 @@ const Leaderboard = () => {
                   <div className="podium-icon">🥉</div>
                   <div className="podium-tile podium-bronze">
                     <div className="podium-name small">
-                      {users[2]?.username || users[2]?.name || 'User'}
+                      {users[2]?.name || users[2]?.username || 'User'}
                     </div>
+                    {users[2]?.email && <div style={{ fontSize: '0.7rem', opacity: 0.75, marginTop: '0.15rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '120px' }}>{users[2].email}</div>}
                     <div className="podium-score small">
                       {(users[2]?.totalPoints || users[2]?.carbonPoints || users[2]?.points || 0).toLocaleString()} pts
                     </div>

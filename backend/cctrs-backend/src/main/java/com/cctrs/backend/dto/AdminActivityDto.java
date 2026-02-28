@@ -31,6 +31,8 @@ public class AdminActivityDto {
     private String userName;
     private String userEmail;
     private String userUsername;
+    // Global rank of the submitting user by total points
+    private Integer userRank;
 
     public AdminActivityDto() {}
 
@@ -92,4 +94,7 @@ public class AdminActivityDto {
 
     public String getUserUsername() { return userUsername; }
     public void setUserUsername(String userUsername) { this.userUsername = userUsername; }
+
+    public Integer getUserRank() { return userRank; }
+    public void setUserRank(Integer userRank) { this.userRank = userRank; }
 }

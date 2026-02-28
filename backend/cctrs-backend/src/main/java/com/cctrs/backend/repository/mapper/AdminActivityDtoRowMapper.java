@@ -41,6 +41,12 @@ public class AdminActivityDtoRowMapper implements RowMapper<AdminActivityDto> {
         dto.setUserEmail(rs.getString("user_email"));
         dto.setUserUsername(rs.getString("user_username"));
 
+        // Global rank — safe fallback if column not present
+        try {
+            int rank = rs.getInt("user_rank");
+            if (!rs.wasNull()) dto.setUserRank(rank);
+        } catch (SQLException ignored) {}
+
         return dto;
     }
 }

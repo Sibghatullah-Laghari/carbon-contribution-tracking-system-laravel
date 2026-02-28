@@ -49,7 +49,9 @@ public class LeaderboardController {
                     user.getId(),
                     user.getName(),
                     user.getPoints(),
-                    badge);
+                    badge,
+                    user.getEmail(),
+                    user.getUsername());
             leaderboard.add(entry);
         }
 

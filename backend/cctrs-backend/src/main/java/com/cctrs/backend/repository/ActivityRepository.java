@@ -174,13 +174,18 @@ public class ActivityRepository {
     }
 
     /**
-     * Fetch all activities with user info for Admin Panel.
+     * Fetch all activities with user info and global rank for Admin Panel.
      */
     public List<AdminActivityDto> findAllWithUser() {
-        String sql = "SELECT a.*, " +
-                "u.name AS user_name, u.email AS user_email, u.username AS user_username " +
+        String sql = "WITH user_ranks AS (" +
+                "SELECT id, RANK() OVER (ORDER BY points DESC) AS rank FROM users" +
+                ") " +
+                "SELECT a.*, " +
+                "u.name AS user_name, u.email AS user_email, u.username AS user_username, " +
+                "ur.rank AS user_rank " +
                 "FROM activities a " +
                 "LEFT JOIN users u ON a.user_id = u.id " +
+                "LEFT JOIN user_ranks ur ON u.id = ur.id " +
                 "ORDER BY a.created_at DESC";
         return jdbcTemplate.query(sql, new AdminActivityDtoRowMapper());
     }
@@ -227,8 +232,13 @@ public class ActivityRepository {
                                                     boolean includeArchived,
                                                     boolean includeDeleted) {
         StringBuilder sql = new StringBuilder(
-            "SELECT a.*, u.name AS user_name, u.email AS user_email, u.username AS user_username " +
-            "FROM activities a LEFT JOIN users u ON a.user_id = u.id WHERE 1=1"
+            "WITH user_ranks AS (SELECT id, RANK() OVER (ORDER BY points DESC) AS rank FROM users) " +
+            "SELECT a.*, u.name AS user_name, u.email AS user_email, u.username AS user_username, " +
+            "ur.rank AS user_rank " +
+            "FROM activities a " +
+            "LEFT JOIN users u ON a.user_id = u.id " +
+            "LEFT JOIN user_ranks ur ON u.id = ur.id " +
+            "WHERE 1=1"
         );
         List<Object> params = new ArrayList<>();
 
@@ -236,16 +246,27 @@ public class ActivityRepository {
         // Visibility filter parameters are accepted by the API but not applied at DB level.
 
         if (query != null && !query.isBlank()) {
-            // Match activity ID exactly or partial, or user name/email/username
-            String like = "%" + query.toLowerCase().trim() + "%";
-            sql.append(" AND (CAST(a.id AS TEXT) LIKE ?"
-                + " OR LOWER(COALESCE(u.name,'')) LIKE ?"
-                + " OR LOWER(COALESCE(u.email,'')) LIKE ?"
-                + " OR LOWER(COALESCE(u.username,'')) LIKE ?)");
-            params.add(like);
-            params.add(like);
-            params.add(like);
-            params.add(like);
+            // Strip leading '#' to support '#18' and '18' as equivalent ID searches
+            String raw = query.trim();
+            String stripped = raw.startsWith("#") ? raw.substring(1) : raw;
+            boolean isNumericId = stripped.matches("\\d+");
+
+            if (isNumericId) {
+                // Exact numeric ID match — safe, no cast, no wildcard
+                sql.append(" AND a.id = ?");
+                params.add(Long.parseLong(stripped));
+            } else {
+                // Text search: user name, email, username, or activity type
+                String like = "%" + raw.toLowerCase() + "%";
+                sql.append(" AND (LOWER(COALESCE(u.name,'')) LIKE ?"
+                    + " OR LOWER(COALESCE(u.email,'')) LIKE ?"
+                    + " OR LOWER(COALESCE(u.username,'')) LIKE ?"
+                    + " OR LOWER(COALESCE(a.activity_type,'')) LIKE ?)");
+                params.add(like);
+                params.add(like);
+                params.add(like);
+                params.add(like);
+            }
         }
 
         if (category != null && !category.isBlank() && !"ALL".equalsIgnoreCase(category)) {
