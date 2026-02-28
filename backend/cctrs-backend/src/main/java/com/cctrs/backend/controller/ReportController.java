@@ -3,6 +3,7 @@ package com.cctrs.backend.controller;
 import com.cctrs.backend.dto.ApiResponse;
 import com.cctrs.backend.dto.MonthlySummaryDTO;
 import com.cctrs.backend.dto.MonthlyGraphDTO;
+import com.cctrs.backend.dto.ProgressGraphDTO;
 import com.cctrs.backend.model.User;
 import com.cctrs.backend.repository.UserRepository;
 import com.cctrs.backend.service.ReportService;
@@ -79,5 +80,36 @@ public class ReportController {
         MonthlyGraphDTO graph = reportService.getMonthlyGraph(
                 user.getId(), year);
         return ResponseEntity.ok(ApiResponse.success("Monthly graph data retrieved", graph));
+    }
+
+    /**
+     * Flexible progress graph endpoint
+     *
+     * GET /api/report/progress
+     *   ?fromDate=YYYY-MM-DD     (optional, inclusive)
+     *   &toDate=YYYY-MM-DD       (optional, inclusive — +1 day applied internally)
+     *   &granularity=MONTH|DAY|HOUR   (default MONTH)
+     *   &activityType=...        (optional)
+     *   &status=APPROVED|...     (optional, defaults to APPROVED)
+     */
+    @io.swagger.v3.oas.annotations.Operation(summary = "Get flexible progress graph data")
+    @GetMapping("/progress")
+    public ResponseEntity<ApiResponse<ProgressGraphDTO>> getProgress(
+            @RequestParam(required = false) String fromDate,
+            @RequestParam(required = false) String toDate,
+            @RequestParam(required = false, defaultValue = "MONTH") String granularity,
+            @RequestParam(required = false) String activityType,
+            @RequestParam(required = false) String status) {
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+
+        ProgressGraphDTO graph = reportService.getProgressGraph(
+                user.getId(), fromDate, toDate, granularity, activityType, status);
+        return ResponseEntity.ok(ApiResponse.success("Progress graph data retrieved", graph));
     }
 }

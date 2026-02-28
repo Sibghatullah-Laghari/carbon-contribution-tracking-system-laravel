@@ -1021,6 +1021,43 @@ a:hover {
   height: 320px;
 }
 
+/* ── Progress filter bar ─────────────────────────────────────────────────── */
+.progress-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: flex-end;
+}
+
+.progress-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 130px;
+}
+
+.progress-filter-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary, #666);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.progress-filter-input {
+  padding: 0.38rem 0.6rem;
+  font-size: 0.875rem;
+  height: auto;
+}
+
+.progress-filter-actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: flex-end;
+  padding-bottom: 0.05rem;
+}
+
+
 @media (max-width: 768px) {
   .section-header {
     flex-direction: column;

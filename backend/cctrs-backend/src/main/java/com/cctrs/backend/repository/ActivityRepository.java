@@ -9,10 +9,12 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import com.cctrs.backend.dto.ProgressGraphDTO;
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +100,93 @@ public class ActivityRepository {
             result.add(map.getOrDefault(i, 0));
         }
         return result;
+    }
+
+    /**
+     * Flexible progress graph query supporting MONTH / DAY / HOUR granularity
+     * with optional date-range, activity-type and status filters.
+     *
+     * @param userId       mandatory, the authenticated user's id
+     * @param fromDate     start of window (inclusive), may be null → -∞
+     * @param toDate       end   of window (exclusive), may be null → +∞
+     * @param granularity  "MONTH" | "DAY" | "HOUR"
+     * @param activityType optional filter (null = all types)
+     * @param status       optional filter (null = APPROVED only)
+     * @return ProgressGraphDTO with sorted labels and matching point totals
+     */
+    public ProgressGraphDTO getProgressGraph(Long userId,
+                                             LocalDateTime fromDate,
+                                             LocalDateTime toDate,
+                                             String granularity,
+                                             String activityType,
+                                             String status) {
+
+        // Choose the period-label SQL expression
+        String periodExpr;
+        if ("DAY".equalsIgnoreCase(granularity)) {
+            periodExpr = "TO_CHAR(created_at, 'YYYY-MM-DD')";
+        } else if ("HOUR".equalsIgnoreCase(granularity)) {
+            periodExpr = "TO_CHAR(created_at, 'HH24')";
+        } else {
+            // default: MONTH
+            periodExpr = "TO_CHAR(created_at, 'YYYY-MM')";
+        }
+
+        StringBuilder sql = new StringBuilder(
+                "SELECT " + periodExpr + " AS label, COALESCE(SUM(points),0) AS total_points " +
+                "FROM activities WHERE user_id = ? ");
+
+        List<Object> params = new ArrayList<>();
+        params.add(userId);
+
+        // Status filter (default to APPROVED only)
+        if (status != null && !status.isBlank()) {
+            sql.append("AND status = ? ");
+            params.add(status.toUpperCase());
+        } else {
+            sql.append("AND status = 'APPROVED' ");
+        }
+
+        if (fromDate != null) {
+            sql.append("AND created_at >= ? ");
+            params.add(fromDate);
+        }
+        if (toDate != null) {
+            sql.append("AND created_at < ? ");
+            params.add(toDate);
+        }
+        if (activityType != null && !activityType.isBlank()) {
+            sql.append("AND activity_type = ? ");
+            params.add(activityType);
+        }
+
+        // PostgreSQL does NOT allow aliases in GROUP BY — repeat the full expression
+        sql.append("GROUP BY ").append(periodExpr)
+           .append(" ORDER BY ").append(periodExpr);
+
+        // Collect ordered results
+        Map<String, Integer> ordered = new LinkedHashMap<>();
+        jdbcTemplate.query(sql.toString(), rs -> {
+            ordered.put(rs.getString("label"), rs.getInt("total_points"));
+        }, params.toArray());
+
+        List<String> labels = new ArrayList<>(ordered.keySet());
+        List<Integer> values = new ArrayList<>(ordered.values());
+
+        // For HOUR granularity, fill in any missing hour slots (00–23)
+        if ("HOUR".equalsIgnoreCase(granularity)) {
+            Map<String, Integer> hourMap = new LinkedHashMap<>();
+            for (int h = 0; h < 24; h++) {
+                String key = String.format("%02d", h);
+                hourMap.put(key, ordered.getOrDefault(key, 0));
+            }
+            labels = new ArrayList<>(hourMap.keySet());
+            values = new ArrayList<>(hourMap.values());
+        }
+
+        int totalPoints = values.stream().mapToInt(Integer::intValue).sum();
+        String effectiveGranularity = granularity != null ? granularity.toUpperCase() : "MONTH";
+        return new ProgressGraphDTO(effectiveGranularity, labels, values, totalPoints);
     }
 
     public List<Activity> findAll() {
