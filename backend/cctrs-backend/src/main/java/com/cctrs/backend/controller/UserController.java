@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -47,7 +48,8 @@ public class UserController {
      *
      * @throws IllegalArgumentException if validation fails
      */
-    @io.swagger.v3.oas.annotations.Operation(summary = "Create a new user")
+    @PreAuthorize("hasRole('ADMIN')")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Create a new user (admin only)")
     @PostMapping
     public ResponseEntity<ApiResponse<User>> createUser(@jakarta.validation.Valid @RequestBody UserRequestDto dto) {
 
@@ -69,6 +71,7 @@ public class UserController {
      * 
      * @return List of all users
      */
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<ApiResponse<List<User>>> getAllUsers() {
         List<User> users = userService.getAllUsers();

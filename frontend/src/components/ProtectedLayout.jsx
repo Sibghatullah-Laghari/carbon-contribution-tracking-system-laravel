@@ -1,10 +1,13 @@
 import React from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedLayout() {
   const navigate = useNavigate();
-  const logout = () => {
-    localStorage.removeItem("token");
+  const { isAdmin, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
     navigate("/login");
   };
 
@@ -34,18 +37,21 @@ export default function ProtectedLayout() {
               <span>{item.label}</span>
             </NavLink>
           ))}
-          <NavLink to="/app/admin" className="nav-link">
-            <span className="nav-icon">🛡️</span>
-            <span>Admin Panel</span>
-          </NavLink>
+          {/* Admin Panel is ONLY rendered when the token role is ADMIN */}
+          {isAdmin && (
+            <NavLink to="/app/admin" className="nav-link">
+              <span className="nav-icon">🛡️</span>
+              <span>Admin Panel</span>
+            </NavLink>
+          )}
         </nav>
-        <button className="nav-logout" onClick={logout}>
+        <button className="nav-logout" onClick={handleLogout}>
           Logout
         </button>
       </aside>
       <main className="main">
         <header className="topbar">
-          <div className="topbar-title">Carbon Contribution Tracking & Reward System</div>
+          <div className="topbar-title">Carbon Contribution Tracking &amp; Reward System</div>
         </header>
         <div className="content">
           <Outlet />

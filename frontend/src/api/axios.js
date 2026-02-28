@@ -16,8 +16,11 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("token");
-      window.location.href = "/login";
+      // Clear all auth data — not just the token — to prevent role leakage
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      localStorage.removeItem('email');
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }

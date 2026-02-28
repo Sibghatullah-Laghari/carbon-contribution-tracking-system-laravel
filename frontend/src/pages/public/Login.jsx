@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api/axios.js";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -29,18 +31,14 @@ export default function Login() {
       const response = await api.post("/auth/login", { email, password });
       const resData = response?.data?.data;
       if (!resData || !resData.token) throw new Error("Invalid login response");
-      localStorage.setItem("token", resData.token);
-      localStorage.setItem("role", resData.role);
-      localStorage.setItem("email", resData.email);
+
+      // Sets token in localStorage AND updates React auth context state atomically
+      login(resData.token, resData.role, resData.email);
 
       if (resData.role === "ADMIN") {
-        navigate("/admin-cctrs-2024");
+        navigate("/admin-cctrs-2024", { replace: true });
       } else {
-        if (resData.role === "ADMIN") {
-          navigate("/admin-cctrs-2024");
-        } else {
-          navigate("/dashboard");
-        }
+        navigate("/dashboard", { replace: true });
       }
     } catch (err) {
       setError(err?.response?.data?.message || err?.message || "Login failed");

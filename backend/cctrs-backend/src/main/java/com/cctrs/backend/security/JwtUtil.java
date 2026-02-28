@@ -41,4 +41,20 @@ public class JwtUtil {
                 .getBody()
                 .get("role", String.class);
     }
+
+    /**
+     * Validates the JWT token: checks signature and expiry.
+     * @return true if valid and not expired, false otherwise
+     */
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

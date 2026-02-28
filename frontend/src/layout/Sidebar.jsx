@@ -1,15 +1,15 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { getRoleFromToken } from '../api/auth';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
     const navigate = useNavigate();
-    const role = getRoleFromToken();
+    // Role is read from reactive AuthContext — updates immediately on login/logout/tab switch
+    const { isAdmin, logout } = useAuth();
 
     const handleLogout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('role');
-        localStorage.removeItem('email');
+        // Clears JWT, role, email from localStorage AND resets React auth state
+        logout();
         navigate('/login');
     };
 
@@ -21,7 +21,7 @@ const Sidebar = () => {
             </div>
             <nav className="sidebar-nav">
                 <ul className="sidebar-list">
-                    {role !== 'ADMIN' && (
+                    {!isAdmin && (
                         <>
                             <li>
                                 <NavLink to="/dashboard" className="nav-link">
@@ -61,7 +61,7 @@ const Sidebar = () => {
                             </li>
                         </>
                     )}
-                    {role === 'ADMIN' && (
+                    {isAdmin && (
                         <>
                             <li>
                                 <NavLink to="/admin-cctrs-2024" className="nav-link">
