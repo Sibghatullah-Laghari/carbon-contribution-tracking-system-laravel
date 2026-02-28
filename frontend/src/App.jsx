@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { getRoleFromToken } from './api/auth';
 import Home from './pages/public/Home';
 import Login from './pages/public/Login';
 import Signup from './pages/public/Signup';
@@ -26,7 +27,7 @@ const PrivateRoute = ({ children }) => {
 
 const AdminRoute = ({ children }) => {
   const token = localStorage.getItem('token');
-  const role = localStorage.getItem('role');
+  const role = getRoleFromToken();
   return (token && role === 'ADMIN') ? children : <Navigate to="/dashboard" />;
 };
 

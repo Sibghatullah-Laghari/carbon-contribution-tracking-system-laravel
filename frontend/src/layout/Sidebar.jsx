@@ -1,9 +1,10 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
+import { getRoleFromToken } from '../api/auth';
 
 const Sidebar = () => {
     const navigate = useNavigate();
-    const role = localStorage.getItem('role');
+    const role = getRoleFromToken();
 
     const handleLogout = () => {
         localStorage.removeItem('token');

@@ -150,7 +150,7 @@ public class AuthController {
             throw new IllegalArgumentException("Email not verified. Please check your inbox.");
         }
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
         logger.info("User logged in: {}", req.getEmail());
 
         com.cctrs.backend.dto.LoginResponse loginRes = new com.cctrs.backend.dto.LoginResponse(token, user.getRole(), user.getEmail());
