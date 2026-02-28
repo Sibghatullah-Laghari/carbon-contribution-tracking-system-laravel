@@ -61,12 +61,20 @@ const Sidebar = () => {
                         </>
                     )}
                     {role === 'ADMIN' && (
-                        <li>
-                            <NavLink to="/admin-cctrs-2024" className="nav-link">
-                                <span className="nav-icon">🛠️</span>
-                                <span className="nav-text">Admin Panel</span>
-                            </NavLink>
-                        </li>
+                        <>
+                            <li>
+                                <NavLink to="/admin-cctrs-2024" className="nav-link">
+                                    <span className="nav-icon">🛠️</span>
+                                    <span className="nav-text">Admin Panel</span>
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/admin-search-activities" className="nav-link">
+                                    <span className="nav-icon">🔍</span>
+                                    <span className="nav-text">Search Activities</span>
+                                </NavLink>
+                            </li>
+                        </>
                     )}
                 </ul>
             </nav>

@@ -14,6 +14,7 @@ import MonthlyProgress from './pages/dashboard/MonthlyProgress';
 import Badges from './pages/dashboard/Badges';
 import Leaderboard from './pages/dashboard/Leaderboard';
 import Admin from './pages/dashboard/Admin';
+import SearchActivities from './pages/dashboard/SearchActivities';
 import StartProof from './pages/StartProof';
 import Journey from './pages/public/Journey';
 import Recycling from './pages/public/Recycling';
@@ -57,6 +58,7 @@ function App() {
             <Route path="badges" element={<Badges />} />
             <Route path="leaderboard" element={<Leaderboard />} />
             <Route path="admin-cctrs-2024" element={<AdminRoute><Admin /></AdminRoute>} />
+            <Route path="admin-search-activities" element={<AdminRoute><SearchActivities /></AdminRoute>} />
             <Route path="proof" element={<StartProof />} />
           </Route>
         </Routes>

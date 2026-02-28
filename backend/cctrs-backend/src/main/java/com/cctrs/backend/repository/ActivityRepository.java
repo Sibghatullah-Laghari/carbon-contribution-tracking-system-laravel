@@ -10,6 +10,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
+import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -190,5 +192,57 @@ public class ActivityRepository {
      */
     public void deleteById(Long activityId) {
         jdbcTemplate.update("DELETE FROM activities WHERE id = ?", activityId);
+    }
+
+    /**
+     * Dynamic search across activities with optional filters.
+     * Supports: text query (ID/name/email/username), category, status, date range.
+     * Used by the Admin Search panel.
+     */
+    public List<AdminActivityDto> searchActivities(String query, String category,
+                                                    String status, String dateFrom,
+                                                    String dateTo) {
+        StringBuilder sql = new StringBuilder(
+            "SELECT a.*, u.name AS user_name, u.email AS user_email, u.username AS user_username " +
+            "FROM activities a LEFT JOIN users u ON a.user_id = u.id WHERE 1=1"
+        );
+        List<Object> params = new ArrayList<>();
+
+        if (query != null && !query.isBlank()) {
+            // Match activity ID exactly or partial, or user name/email/username
+            String like = "%" + query.toLowerCase().trim() + "%";
+            sql.append(" AND (CAST(a.id AS TEXT) LIKE ?"
+                + " OR LOWER(COALESCE(u.name,'')) LIKE ?"
+                + " OR LOWER(COALESCE(u.email,'')) LIKE ?"
+                + " OR LOWER(COALESCE(u.username,'')) LIKE ?)");
+            params.add(like);
+            params.add(like);
+            params.add(like);
+            params.add(like);
+        }
+
+        if (category != null && !category.isBlank() && !"ALL".equalsIgnoreCase(category)) {
+            sql.append(" AND UPPER(COALESCE(a.activity_type,'')) LIKE ?");
+            params.add("%" + category.toUpperCase().trim() + "%");
+        }
+
+        if (status != null && !status.isBlank() && !"ALL".equalsIgnoreCase(status)) {
+            sql.append(" AND a.status = ?");
+            params.add(status.trim());
+        }
+
+        if (dateFrom != null && !dateFrom.isBlank()) {
+            sql.append(" AND a.created_at >= ?");
+            params.add(LocalDate.parse(dateFrom).atStartOfDay());
+        }
+
+        if (dateTo != null && !dateTo.isBlank()) {
+            sql.append(" AND a.created_at <= ?");
+            params.add(LocalDate.parse(dateTo).atTime(23, 59, 59));
+        }
+
+        sql.append(" ORDER BY a.created_at DESC");
+
+        return jdbcTemplate.query(sql.toString(), new AdminActivityDtoRowMapper(), params.toArray());
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/activities")
@@ -31,6 +32,25 @@ public class AdminActivityController {
         logger.info("Admin fetching all activities for review");
         List<AdminActivityDto> activities = activityService.getAllActivitiesWithUser();
         return ResponseEntity.ok(ApiResponse.success("All activities retrieved for admin", activities));
+    }
+
+    /**
+     * Dynamic activity search for admin.
+     * Supports filtering by text query (ID/user name/email), category, status, date range.
+     * Path: GET /admin/activities/search
+     */
+    @io.swagger.v3.oas.annotations.Operation(summary = "Search activities with filters (admin-only)")
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<AdminActivityDto>>> searchActivities(
+            @RequestParam(required = false) String query,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String dateFrom,
+            @RequestParam(required = false) String dateTo) {
+        logger.info("Admin searching activities — query={}, category={}, status={}, dateFrom={}, dateTo={}",
+                query, category, status, dateFrom, dateTo);
+        List<AdminActivityDto> results = activityService.searchActivities(query, category, status, dateFrom, dateTo);
+        return ResponseEntity.ok(ApiResponse.success("Search results", results));
     }
 
     /**

@@ -171,6 +171,15 @@ public class ActivityService {
     }
 
     /**
+     * Dynamic search for admin — filters by query text, category, status, date range.
+     */
+    public List<AdminActivityDto> searchActivities(String query, String category,
+                                                    String status, String dateFrom,
+                                                    String dateTo) {
+        return activityRepository.searchActivities(query, category, status, dateFrom, dateTo);
+    }
+
+    /**
      * Admin deletes an activity permanently.
      */
     public void deleteActivity(Long activityId) {
