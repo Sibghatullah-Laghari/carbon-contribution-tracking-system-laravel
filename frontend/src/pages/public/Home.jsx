@@ -38,12 +38,13 @@ export default function Home() {
         }
         .home-actions { display: flex; align-items: center; gap: 0.75rem; }
         .ghost-btn {
-          font-weight: 600; font-size: 0.9rem; color: #2a9d8f;
-          text-decoration: none; padding: 0.55rem 1.3rem;
-          border-radius: 8px; border: 2px solid #2a9d8f;
-          transition: all 0.2s;
-        }
-        .ghost-btn:hover { background: #2a9d8f; color: #2a9d8f }
+  font-weight: 600; font-size: 0.9rem; color: #2a9d8f;
+  text-decoration: none; padding: 0.55rem 1.3rem;
+  border-radius: 8px; background: #2a9d8f;
+  border: 2px solid #2a9d8f;
+  transition: all 0.2s;
+}
+.ghost-btn:hover { background: #f0faf9; transform: translateY(-1px); }
         .primary-btn {
           font-weight: 700; font-size: 0.9rem; color: #fff;
           text-decoration: none; padding: 0.55rem 1.4rem;

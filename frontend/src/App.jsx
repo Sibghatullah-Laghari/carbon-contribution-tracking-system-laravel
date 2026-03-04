@@ -20,7 +20,7 @@ import SearchActivities from './pages/dashboard/SearchActivities';
 import StartProof from './pages/StartProof';
 import Journey from './pages/public/Journey';
 import Recycling from './pages/public/Recycling';
-
+import OAuth2Callback from "./pages/public/OAuth2Callback";
 /**
  * PrivateRoute — requires a valid, non-expired token.
  * Redirects unauthenticated visitors to /login.
@@ -56,6 +56,7 @@ function AppRoutes() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/journey" element={<Journey />} />
                 <Route path="/recycling" element={<Recycling />} />
+                <Route path="/oauth2/callback" element={<OAuth2Callback />} />
 
                 {/* ── USER layout tree ───────────────────────────────────────
                      Wrapped by PrivateRoute only.

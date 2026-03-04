@@ -38,6 +38,10 @@ export default function Signup() {
     }
   };
 
+  const handleGoogleSignup = () => {
+    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+  };
+
   return (
       <div className="signup-page">
         <style>{`
@@ -76,15 +80,10 @@ export default function Signup() {
         .can-wrap.pour { transform: translate(-20px, 15px) rotate(-45deg); }
 
         .water-wrap {
-          position: absolute;
-          top: 175px;
-          left: 50%;
-          transform: translateX(-50%);
-          opacity: 0;
-          transition: opacity 0.3s;
+          position: absolute; top: 175px; left: 50%;
+          transform: translateX(-50%); opacity: 0; transition: opacity 0.3s;
         }
         .water-wrap.show { opacity: 1; }
-
         .w-stream { display: flex; flex-direction: column; align-items: center; gap: 3px; }
         .w-line {
           width: 3px; border-radius: 4px;
@@ -169,10 +168,8 @@ export default function Signup() {
         .signup-back:hover { gap: 0.7rem; }
 
         .signup-form-header {
-          text-align: center;
-          margin-bottom: 2rem;
-          padding-bottom: 1.5rem;
-          border-bottom: 1px solid #f0f4f3;
+          text-align: center; margin-bottom: 2rem;
+          padding-bottom: 1.5rem; border-bottom: 1px solid #f0f4f3;
         }
         .signup-form-icon { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; }
         .signup-form-header h1 {
@@ -224,6 +221,28 @@ export default function Signup() {
           box-shadow: 0 6px 20px rgba(42,157,143,0.45);
         }
         .signup-submit-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .divider {
+          display: flex; align-items: center; gap: 0.75rem; margin: 0.25rem 0;
+        }
+        .divider-line { flex: 1; height: 1px; background: #e2eeec; }
+        .divider-text { font-size: 0.75rem; color: #bbb; font-weight: 600; }
+
+        .google-btn {
+          width: 100%; padding: 0.85rem 1rem;
+          border: 1.5px solid #e2eeec; border-radius: 10px;
+          background: #fff; cursor: pointer;
+          display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+          font-family: 'Inter', sans-serif; font-size: 0.95rem;
+          font-weight: 600; color: #333;
+          transition: all 0.2s;
+          box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .google-btn:hover {
+          border-color: #ccc;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+          transform: translateY(-1px);
+        }
 
         .signup-form-footer {
           text-align: center; margin-top: 1.3rem;
@@ -363,6 +382,24 @@ export default function Signup() {
               {loading ? "Creating account..." : "Create Account →"}
             </button>
           </form>
+
+          {/* DIVIDER */}
+          <div className="divider" style={{marginTop:'1rem'}}>
+            <div className="divider-line"></div>
+            <span className="divider-text">OR</span>
+            <div className="divider-line"></div>
+          </div>
+
+          {/* GOOGLE BUTTON */}
+          <button className="google-btn" onClick={handleGoogleSignup}>
+            <svg width="20" height="20" viewBox="0 0 48 48">
+              <path fill="#FFC107" d="M43.6 20H24v8h11.3C33.6 33.1 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.1-4z"/>
+              <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 16 19 12 24 12c3.1 0 5.8 1.1 7.9 3l5.7-5.7C34.1 6.5 29.3 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
+              <path fill="#4CAF50" d="M24 44c5.2 0 9.9-1.9 13.5-5l-6.2-5.2C29.4 35.6 26.8 36 24 36c-5.2 0-9.6-2.9-11.3-7.1l-6.5 5C9.5 39.5 16.3 44 24 44z"/>
+              <path fill="#1976D2" d="M43.6 20H24v8h11.3c-.9 2.4-2.5 4.4-4.6 5.8l6.2 5.2C40.7 35.7 44 30.3 44 24c0-1.3-.1-2.7-.4-4z"/>
+            </svg>
+            Continue with Google
+          </button>
 
           <div className="signup-form-footer">
             <span>Already have an account?</span>
