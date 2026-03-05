@@ -20,6 +20,7 @@ export default function Journey() {
     const locationState = useLocation();
     const canvasRef = useRef(null);
     const videoRef = useRef(null);
+    const redirectTimeoutRef = useRef(null);
 
     const [activityId, setActivityId] = useState("");
     const [step, setStep] = useState("idle"); // idle | started | ended | ticket | submitting | done
@@ -53,6 +54,14 @@ export default function Journey() {
     useEffect(() => {
         return () => { if (stream) stream.getTracks().forEach(t => t.stop()); };
     }, [stream]);
+
+    useEffect(() => {
+        return () => {
+            if (redirectTimeoutRef.current) {
+                clearTimeout(redirectTimeoutRef.current);
+            }
+        };
+    }, []);
 
     useEffect(() => {
         const stored = sessionStorage.getItem("journeySession");
@@ -225,11 +234,39 @@ export default function Journey() {
             sessionStorage.removeItem("journeySession");
             setStep("done");
             setMessage("✅ Journey proof submitted successfully!");
-            setTimeout(() => navigate("/my-activities"), 2500);
+            redirectTimeoutRef.current = setTimeout(() => navigate("/my-activities"), 2500);
         } catch (err) {
             setStep("ticket");
             setError(err?.response?.data?.message || err?.message || "Submission failed");
         }
+    };
+
+    const handleBackStep = () => {
+        const previousStepMap = {
+            started: "idle",
+            ended: "started",
+            ticket: "ended",
+            submitting: "ticket",
+            done: "ticket",
+        };
+        const previousStep = previousStepMap[step];
+        if (!previousStep) return;
+
+        if (redirectTimeoutRef.current) {
+            clearTimeout(redirectTimeoutRef.current);
+            redirectTimeoutRef.current = null;
+        }
+
+        if (stream && (step === "ticket" || step === "done")) {
+            stream.getTracks().forEach((track) => track.stop());
+            setStream(null);
+        }
+
+        setError("");
+        setGpsError("");
+        setCameraError("");
+        setMessage("");
+        setStep(previousStep);
     };
 
     const results = computeResults();
@@ -255,6 +292,19 @@ export default function Journey() {
         .journey-step.active { background: #2a9d8f; color: #fff; }
         .journey-step.done { background: #e8faf7; color: #2a9d8f; }
         .journey-step-icon { font-size: 1.2rem; display: block; margin-bottom: 2px; }
+
+                .journey-back-btn {
+                    margin-bottom: 1rem;
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.35rem;
+                }
+
+                @media (max-width: 640px) {
+                    .journey-back-btn {
+                        width: 100%;
+                    }
+                }
 
         .gps-card {
           background: #f8fffe; border: 1.5px solid #e2eeec;
@@ -353,6 +403,13 @@ export default function Journey() {
                     </div>
                     <div className="card-hint">GPS-verified journey proof with ticket photo</div>
                 </div>
+
+                {step !== "idle" && (
+                    <button className="btn btn-secondary journey-back-btn" onClick={handleBackStep}>
+                        <span aria-hidden="true">←</span>
+                        <span>Back</span>
+                    </button>
+                )}
 
                 {/* STEP INDICATOR */}
                 <div className="journey-steps">
