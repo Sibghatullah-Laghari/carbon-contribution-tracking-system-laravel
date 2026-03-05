@@ -38,13 +38,14 @@ export default function Home() {
         }
         .home-actions { display: flex; align-items: center; gap: 0.75rem; }
         .ghost-btn {
-  font-weight: 600; font-size: 0.9rem; color: #2a9d8f;
+  font-weight: 600; font-size: 0.9rem; color: #2a9d8f !important;
   text-decoration: none; padding: 0.55rem 1.3rem;
-  border-radius: 8px; background: #2a9d8f;
-  border: 2px solid #2a9d8f;
+  border-radius: 8px; background: #ffffff;
+  border: 1.5px solid #2a9d8f;
   transition: all 0.2s;
+  box-shadow: 0 0 0 2px rgba(42,157,143,0.08);
 }
-.ghost-btn:hover { background: #f0faf9; transform: translateY(-1px); }
+.ghost-btn:hover { background: #f0faf9; color: #2a9d8f !important; transform: translateY(-1px); }
         .primary-btn {
           font-weight: 700; font-size: 0.9rem; color: #fff;
           text-decoration: none; padding: 0.55rem 1.4rem;
@@ -422,7 +423,7 @@ export default function Home() {
               <ul>
                 <li><a href="#">Help</a></li>
                 <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms & Conditions</a></li>
+                <li><Link to="/terms">Terms & Conditions</Link></li>
                 <li><a href="#">FAQ</a></li>
               </ul>
             </div>
