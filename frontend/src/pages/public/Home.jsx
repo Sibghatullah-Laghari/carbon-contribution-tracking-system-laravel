@@ -421,10 +421,10 @@ export default function Home() {
             <div className="footer-col">
               <h4>Resources</h4>
               <ul>
-                <li><a href="#">Help</a></li>
-                <li><a href="#">Privacy Policy</a></li>
+                <li><Link to="/help">Help</Link></li>
+                <li><Link to="/privacy">Privacy Policy</Link></li>
                 <li><Link to="/terms">Terms & Conditions</Link></li>
-                <li><a href="#">FAQ</a></li>
+                <li><Link to="/faq">FAQ</Link></li>
               </ul>
             </div>
             <div className="footer-col">

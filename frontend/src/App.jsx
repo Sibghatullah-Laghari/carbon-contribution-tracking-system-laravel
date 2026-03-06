@@ -17,26 +17,22 @@ import Badges from './pages/dashboard/Badges';
 import Leaderboard from './pages/dashboard/Leaderboard';
 import Admin from './pages/dashboard/Admin';
 import SearchActivities from './pages/dashboard/SearchActivities';
+import AdminQuestions from './pages/dashboard/AdminQuestions';
 import StartProof from './pages/StartProof';
 import Journey from './pages/public/Journey';
 import Recycling from './pages/public/Recycling';
 import OAuth2Callback from "./pages/public/OAuth2Callback";
 import Terms from "./pages/public/Terms";
-/**
- * PrivateRoute — requires a valid, non-expired token.
- * Redirects unauthenticated visitors to /login.
- */
+import Help from "./pages/public/Help";
+import FAQ from "./pages/public/FAQ";
+import Privacy from "./pages/public/Privacy";
+import MyQuestions from "./pages/public/MyQuestions";
+
 const PrivateRoute = ({ children }) => {
     const { isAuthenticated } = useAuth();
     return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
-/**
- * AdminRoute — requires ADMIN role in the decoded JWT.
- * Non-admin authenticated users are redirected to /dashboard (their safe home).
- * Unauthenticated users are redirected to /login.
- * The backend enforces the same rule independently on every API call.
- */
 const AdminRoute = ({ children }) => {
     const { isAuthenticated, isAdmin } = useAuth();
     if (!isAuthenticated) return <Navigate to="/login" replace />;
@@ -59,12 +55,12 @@ function AppRoutes() {
                 <Route path="/recycling" element={<Recycling />} />
                 <Route path="/oauth2/callback" element={<OAuth2Callback />} />
                 <Route path="/terms" element={<Terms />} />
+                <Route path="/help" element={<Help />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/my-questions" element={<MyQuestions />} />
 
-                {/* ── USER layout tree ───────────────────────────────────────
-                     Wrapped by PrivateRoute only.
-                     UserLayout renders UserSidebar — zero admin links.
-                     Admin routes are NOT nested here; they live in their own tree.
-                     A USER cannot reach AdminLayout by any navigation path.        */}
+                {/* ── USER layout tree ─────────────────────────────────── */}
                 <Route
                     path="/"
                     element={
@@ -82,12 +78,7 @@ function AppRoutes() {
                     <Route path="proof" element={<StartProof />} />
                 </Route>
 
-                {/* ── ADMIN layout tree ──────────────────────────────────────
-                     Wrapped by AdminRoute (checks isAuthenticated AND isAdmin).
-                     AdminLayout renders AdminSidebar — zero user links.
-                     User routes are NOT nested here; they live in their own tree.
-                     A USER cannot reach AdminLayout regardless of URL manipulation
-                     because AdminRoute redirects them before the layout mounts.    */}
+                {/* ── ADMIN layout tree ────────────────────────────────── */}
                 <Route
                     path="/"
                     element={
@@ -98,6 +89,7 @@ function AppRoutes() {
                 >
                     <Route path="admin-cctrs-2024" element={<Admin />} />
                     <Route path="admin-search-activities" element={<SearchActivities />} />
+                    <Route path="admin-questions" element={<AdminQuestions />} />
                 </Route>
             </Routes>
         </Router>

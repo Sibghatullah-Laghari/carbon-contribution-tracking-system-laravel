@@ -37,6 +37,12 @@ const AdminSidebar = () => {
                             <span className="nav-text">Search Activities</span>
                         </NavLink>
                     </li>
+                    <li>
+                        <NavLink to="/admin-questions" className="nav-link">
+                            <span className="nav-icon">💬</span>
+                            <span className="nav-text">Question Engine</span>
+                        </NavLink>
+                    </li>
                 </ul>
             </nav>
             <button onClick={handleLogout} className="btn btn-danger sidebar-logout">
