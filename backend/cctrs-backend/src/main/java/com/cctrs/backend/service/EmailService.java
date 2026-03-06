@@ -192,4 +192,30 @@ public class EmailService {
         }
         return fromAddress;
     }
+
+    public void sendQuestionAnswerEmail(String toEmail, String name, String question, String answer) {
+        String resolvedFrom = getFromAddressOrLog("question-answer", toEmail);
+        if (resolvedFrom == null) return;
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(resolvedFrom);
+            message.setTo(toEmail);
+            message.setSubject("CCTRS — Your Question Has Been Answered");
+            message.setText(
+                    "Hello " + (name != null && !name.isBlank() ? name : "there") + ",\n\n" +
+                            "Thank you for reaching out to CCTRS. Here is the answer to your question:\n\n" +
+                            "❓ Your Question:\n" + question + "\n\n" +
+                            "✅ Answer:\n" + answer + "\n\n" +
+                            "If you have more questions, visit us at http://localhost:5173/faq\n\n" +
+                            "Best regards,\n" +
+                            "The CCTRS Team\n" +
+                            "cctrsapp@gmail.com"
+            );
+            mailSender.send(message);
+            logger.info("Question answer email sent to: {}", toEmail);
+        } catch (MailException e) {
+            logger.error("Failed to send question answer email to: {}. Error: {}", toEmail, e.getMessage(), e);
+        }
+    }
+
 }
