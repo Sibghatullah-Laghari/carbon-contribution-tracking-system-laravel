@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Java artifacts (not typical for frontend, excluded for safety)
+target/
+*.jar
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
