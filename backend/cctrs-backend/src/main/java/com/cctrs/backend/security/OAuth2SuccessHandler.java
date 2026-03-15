@@ -37,7 +37,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String name  = oAuth2User.getAttribute("name");
 
         if (email == null) {
+<<<<<<< HEAD
             response.sendRedirect(frontendUrl + "/login?error=no_email");
+=======
+            response.sendRedirect("https://carbon-contribution-tracking-system.vercel.app/login?error=no_email");
+>>>>>>> develop
             return;
         }
 
@@ -67,7 +71,11 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole());
 
         // Redirect to frontend with token
+<<<<<<< HEAD
         response.sendRedirect(frontendUrl + "/oauth2/callback?token=" + token + "&role=" + user.getRole());
+=======
+        response.sendRedirect("https://carbon-contribution-tracking-system.vercel.app/oauth2/callback?token=" + token + "&role=" + user.getRole());
+>>>>>>> develop
     }
 }
 
