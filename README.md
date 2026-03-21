@@ -18,7 +18,7 @@ To analyze whether a user’s environmental contribution is improving, stable, o
 ## Technology Stack
 - Backend: Java, Spring Boot
 - Frontend: HTML, CSS, Bootstrap, JavaScript
-- Database: MySQL
+- Database: supabase
 - Version Control: Git & GitHub
 
 ## Project Status
