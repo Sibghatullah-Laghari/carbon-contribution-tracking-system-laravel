@@ -1,0 +1,435 @@
+CARBON CONTRIBUTION TRACKING SYSTEM (CCTRS) - COMPLETE PROJECT SUMMARY
+=====================================================================
+
+Version Context
+---------------
+- Workspace root: `carbon-contribution-tracking-system/`
+- Main backend: `backend/cctrs-backend` (Spring Boot)
+- Main frontend: `frontend` (React + Vite)
+- Supporting docs: `docs/` (architecture, API, ER, development)
+- Deployment hints: Vercel configs in frontend and root; Dockerfile for backend
+
+1) PROJECT OVERVIEW
+-------------------
+CCTRS is a full-stack web platform that tracks environmentally positive user activities
+(e.g., tree-related actions, sustainability actions), validates evidence (proof),
+and rewards users with points and badges. It includes:
+- User-facing activity submission and progress views
+- Admin moderation, question/config management, and approvals
+- Analytics and leaderboard visibility
+- Authentication and protected role-based dashboards
+
+Primary goals:
+- Encourage eco-friendly behavior through gamification
+- Ensure trust via proof verification and moderation flows
+- Provide transparent ranking and monthly/overall progress
+- Support future growth with modular backend/frontend structure
+
+2) SYSTEM ARCHITECTURE
+----------------------
+Architecture style:
+- Client-server web architecture
+- Frontend SPA (React) communicates with REST APIs
+- Backend (Spring Boot) handles business logic, auth, persistence
+- Relational database with SQL schema + migration scripts
+
+High-level components:
+1. React Frontend (`frontend/src`)
+   - Route-based page modules for public/user/admin use cases
+   - API wrapper layer (`src/api`) for HTTP communication
+   - Context-driven auth state management (`src/context/AuthContext.jsx`)
+2. Spring Backend (`backend/cctrs-backend/src/main/java`)
+   - Layered design: Controllers -> Services -> Repositories -> Entities
+   - Security module for authentication/authorization
+   - Activity/proof/approval/points domain logic
+3. Database (`database/`, backend resources, running DB files under `data/`)
+   - Core entities for users, activities, proofs, points, badges, leaderboard
+   - Migration scripts for evolving schemas
+4. Documentation (`docs/`)
+   - Detailed API reference and architecture documentation
+   - ER diagram and implementation planning docs
+
+Operational flow:
+- User authenticates -> submits activity/proof -> system stores as pending ->
+  admin verifies/rejects -> points awarded/revoked -> badges/leaderboard updated ->
+  dashboards and analytics reflect status.
+
+3) BACKEND STRUCTURE AND KEY MODULES
+------------------------------------
+Backend root:
+- `backend/cctrs-backend`
+- Build/dependency: Maven (`pom.xml`)
+- Entry/resources: `src/main/java`, `src/main/resources`
+
+Typical Spring module organization (inferred from structure + feature pages):
+- Auth/Security Module
+  - JWT/session/token utilities (exact strategy in backend code/docs)
+  - Login/signup/password reset and role controls
+- User Module
+  - User profile, roles (user/admin), account metadata
+- Activity Module
+  - Activity definitions/categories/questions
+  - Submission intake and status transitions
+- Proof Module
+  - Proof upload metadata, validation flags, moderation state
+- Verification/Admin Module
+  - Pending queue retrieval, approve/reject actions, rejection reasons
+- Gamification Module
+  - Points rules, badge assignment logic, leaderboard aggregation
+- Analytics Module
+  - Monthly progress and dashboard metrics
+- Search/Discovery Module
+  - Activity search and possibly filter endpoints
+- Question Management Module
+  - Admin question set CRUD (based on `AdminQuestions.jsx` and migration)
+- Soft Delete / Archive / Abuse Flags support
+  - Indicated by migrations:
+    - `migration_add_soft_delete_archive.sql`
+    - `migration_add_tree_abuse_flags.sql`
+
+Config and infra:
+- `application.properties` / prod config variants in built resources
+- Docker support (`Dockerfile`)
+- SQL schema files in resources and project-level `database/`
+
+4) FRONTEND STRUCTURE AND KEY COMPONENTS
+----------------------------------------
+Frontend root:
+- `frontend/`
+- Stack: React + Vite
+- Key files:
+  - `src/main.jsx` bootstrapping
+  - `src/App.jsx` route composition
+  - `src/styles.css` global style layer
+
+API abstraction:
+- `src/api/axios.js` - base HTTP client configuration
+- `src/api/auth.js` - auth-specific API calls
+- `src/config/apiBaseUrl.js` - environment-aware API base URL
+
+Auth and protection:
+- `src/context/AuthContext.jsx` - global auth/session state
+- `src/components/ProtectedLayout.jsx` - route guarding by auth/role
+
+Layout system:
+- `src/layout/Navbar.jsx`
+- `src/layout/Sidebar.jsx`
+- `src/layout/UserLayout.jsx`, `src/layout/AdminLayout.jsx`
+- `src/layout/UserSidebar.jsx`, `src/layout/AdminSidebar.jsx`
+- `src/layout/DashboardLayout.jsx`
+
+Public pages:
+- `src/pages/public/Home.jsx`
+- `src/pages/public/FAQ.jsx`
+- `src/pages/public/Help.jsx`
+- `src/pages/public/Journey.jsx`
+- `src/pages/public/ForgotPassword.jsx`
+- Other public info/auth pages (truncated listing indicates additional files)
+
+User/dashboard pages:
+- `src/pages/dashboard/Dashboard.jsx`
+- `src/pages/dashboard/SubmitActivity.jsx`
+- `src/pages/StartProof.jsx`
+- `src/pages/dashboard/MyActivities.jsx`
+- `src/pages/dashboard/MonthlyProgress.jsx`
+- `src/pages/dashboard/Badges.jsx`
+- `src/pages/dashboard/Leaderboard.jsx`
+- `src/pages/dashboard/SearchActivities.jsx`
+
+Admin pages:
+- `src/pages/dashboard/Admin.jsx`
+- `src/pages/dashboard/AdminQuestions.jsx`
+- (Likely moderation/management widgets tied into these views)
+
+Analytics utilities:
+- `src/components/analytics/chartUtils.js`
+- `src/components/analytics/CustomTooltip.jsx`
+
+5) AUTHENTICATION FLOW
+----------------------
+Observed/authenticated UX flow (from frontend structure + standard Spring/React patterns):
+
+1. User accesses public/auth screens
+   - Home/help/FAQ/journey and auth endpoints
+2. Login or registration request
+   - Frontend uses `src/api/auth.js`
+   - Backend validates credentials, issues auth token/session
+3. Auth state persistence
+   - `AuthContext.jsx` stores user identity + role + token state
+4. Route protection
+   - `ProtectedLayout.jsx` blocks unauthenticated routes
+   - Role-aware layout/router directs to user/admin dashboards
+5. Password recovery
+   - `ForgotPassword.jsx` handles reset request and follow-up flow
+6. Sessionized API requests
+   - `axios.js` attaches token headers/interceptors
+7. Unauthorized handling
+   - Expired/invalid token -> logout/redirect to login/public page
+
+Role model:
+- At least two roles implied: USER and ADMIN
+- Admin-only sections exposed through admin layout and guarded routes
+
+6) ACTIVITY SUBMISSION WORKFLOW
+-------------------------------
+Primary user flow:
+1. User navigates to submit activity page (`SubmitActivity.jsx`)
+2. User selects activity type and fills required details/questions
+3. User starts proof flow (`StartProof.jsx`) if evidence is required
+4. Frontend sends submission payload to backend activity endpoints
+5. Backend validates:
+   - Required fields
+   - Activity-specific constraints
+   - (Potential abuse flags / duplicate checks from migration intent)
+6. Submission stored with initial status (likely PENDING)
+7. User sees status in `MyActivities.jsx`
+8. Upon moderation decision:
+   - APPROVED -> points granted
+   - REJECTED -> rejection reason displayed
+9. Monthly/overall metrics update for user dashboard
+
+Likely additional details:
+- Question-driven submissions managed by admin question config
+- Search and filtering available via `SearchActivities.jsx`
+- Proof attachment metadata associated with submission records
+
+7) PROOF VERIFICATION SYSTEM
+----------------------------
+Proof verification appears as a dedicated moderation domain.
+
+Key parts:
+- User proof intake (`StartProof.jsx`) and backend proof storage metadata
+- Verification queue exposed to admin interfaces
+- Moderation outcomes:
+  - Verified/Approved
+  - Rejected with reason (migration indicates rejection reason support)
+- Abuse safeguards:
+  - Tree abuse flags migration suggests anti-fraud/quality controls
+- Audit/state tracking:
+  - Status fields and possibly timestamps/reviewer attribution
+
+Probable state transitions:
+DRAFT/NEW -> PENDING_REVIEW -> APPROVED | REJECTED | FLAGGED
+
+System impact:
+- Approved proofs unlock points and progression
+- Rejections feed user transparency and resubmission behavior
+- Flagged patterns enable stronger review processes
+
+8) ADMIN APPROVAL SYSTEM
+------------------------
+Admin capabilities indicated by `Admin.jsx`, `AdminQuestions.jsx`, and migrations:
+
+Core admin workflows:
+1. View pending submissions/proofs
+2. Inspect details + evidence
+3. Approve or reject each item
+4. Enter rejection reason when rejecting
+5. Manage questions/forms used in activity submissions
+6. Potentially archive/soft-delete problematic records
+
+Administrative outcomes:
+- Controls integrity of points and leaderboard fairness
+- Provides moderation transparency to users
+- Enables dynamic policy/config updates without redeploying frontend
+
+Likely safeguards:
+- Role-based authorization at API level
+- Restricted admin routes in frontend
+- Validation to prevent invalid moderation transitions
+
+9) POINTS, BADGES, AND LEADERBOARD LOGIC
+----------------------------------------
+Gamification domains present in frontend pages:
+- `Badges.jsx`
+- `Leaderboard.jsx`
+- `MonthlyProgress.jsx`
+- Dashboard metrics
+
+Points logic (typical + implied):
+- Points awarded on approved activities/proofs
+- Different activity types may have weighted values
+- Monthly accumulation for progress view
+- Lifetime/total points for ranking and badges
+
+Badges logic:
+- Threshold-based or milestone-based unlocks
+- Displayed in badge page and possibly dashboard highlights
+- Could include streak, category, or contribution milestones
+
+Leaderboard logic:
+- Ranks users by points (monthly and/or all-time)
+- Tie handling by secondary criteria (e.g., latest activity timestamp)
+- Search/filter support likely linked to activity discovery features
+
+Integrity mechanism:
+- Points changes tied to moderation status changes
+- Rejection/revocation path prevents inflated scores
+
+10) API STRUCTURE
+-----------------
+API documentation references:
+- `docs/api-design.md`
+- `docs/api-reference-complete.md`
+
+Likely REST domain groups (based on feature set and frontend modules):
+- `/auth/*`
+  - login, register, logout, forgot/reset password, profile/me
+- `/users/*`
+  - profile, stats, role-protected account endpoints
+- `/activities/*`
+  - list activity types, submit activity, fetch my activities, search
+- `/proofs/*`
+  - create/upload proof metadata, fetch proof status/details
+- `/admin/*`
+  - pending queue, approve/reject endpoints, manage questions
+- `/points/*` or embedded in user/dashboard endpoints
+  - point totals, transaction/event views
+- `/badges/*`
+  - badge catalog and user-earned badges
+- `/leaderboard/*`
+  - ranked lists with time-based scopes
+- `/analytics/*`
+  - monthly progress and dashboard charts
+
+API characteristics likely used:
+- JSON request/response payloads
+- JWT/Bearer token auth headers
+- Validation + error envelopes for bad input/unauthorized actions
+- Pagination/filtering for list-heavy endpoints
+
+11) DATABASE ENTITIES
+---------------------
+Schema and migrations indicate a relational model with evolving structure.
+
+Confirmed schema/migration artifacts:
+- `database/schema.sql`
+- `database/migration_add_questions_table.sql`
+- `database/migration_add_rejection_reason.sql`
+- `database/migration_add_soft_delete_archive.sql`
+- `database/migration_add_tree_abuse_flags.sql`
+- `database/migration_fix_proof_image_size.sql`
+
+Likely core entities:
+1. User
+   - id, name, email, password hash, role, status, created timestamps
+2. Activity Definition / Question
+   - activity type metadata and dynamic question sets
+3. Activity Submission
+   - user_id, activity_type_id, answers/details, status, timestamps
+4. Proof
+   - submission_id, proof file/image metadata, validation flags, status
+5. Moderation Decision
+   - reviewer/admin id, decision, rejection reason, reviewed_at
+6. Points Ledger / Points Summary
+   - award/revoke events linked to approved activities
+7. Badge / UserBadge
+   - badge definitions + user unlock mapping
+8. Leaderboard Materialization or Query View
+   - derived rankings by period
+9. Soft Delete / Archive fields
+   - archive status, deleted flags where applicable
+10. Abuse/Flag fields
+   - tree abuse indicators for suspicious or invalid claims
+
+Data files present:
+- Local DB artifacts in `data/` (`cctrsdb.mv.db`, locks/traces)
+- Indicates local development with embedded DB at least in some profiles
+
+12) ALL MAJOR FEATURES IMPLEMENTED
+----------------------------------
+Major features:
+- User authentication and protected routing
+- Role-based dashboards (user/admin)
+- Activity submission with dynamic/question-driven forms
+- Proof initiation and evidence handling
+- Admin moderation (approve/reject) with rejection reasons
+- Points accumulation tied to approved contributions
+- Badge unlocking and badge display
+- Leaderboard ranking for user comparison
+- Monthly progress tracking and dashboard analytics
+- Activity search and user activity history
+- Public informational pages (home/help/FAQ/journey)
+- Password recovery flow
+
+Major admin/config features:
+- Admin question management UI
+- Verification queue and decision actions
+- Integrity controls via moderation and abuse-related schema support
+- Soft delete/archive capabilities for safer data operations
+
+13) ADDITIONAL MODULES, UTILITIES, AND MINOR FEATURES
+------------------------------------------------------
+Utilities and supporting modules:
+- Chart/analytics helper utilities:
+  - `src/components/analytics/chartUtils.js`
+  - `src/components/analytics/CustomTooltip.jsx`
+- Centralized API base URL/environment config:
+  - `src/config/apiBaseUrl.js`
+- Centralized axios setup with likely interceptors:
+  - `src/api/axios.js`
+- Reusable layouts and sidebars for consistent UX:
+  - `src/layout/*`
+- Route guard abstraction:
+  - `src/components/ProtectedLayout.jsx`
+- Docs-first project support:
+  - API design/reference, architecture, ER diagram, folder structure docs
+- Deployment configuration:
+  - `vercel.json` files (root/frontend)
+  - Backend Dockerfile
+- Test helper script:
+  - `test-api.sh`
+- Backend helper/readme files:
+  - `HELP.md`, backend-specific README
+
+Potential minor/operational features inferred:
+- Profile-aware backend configuration (prod/dev properties)
+- Local DB-based quickstart support
+- Migration-driven schema evolution discipline
+- Logging/error traces present from JVM crash logs (`hs_err_pid*.log`) for diagnostics
+
+CONSOLIDATED FEATURE INVENTORY (MAJOR + MINOR)
+-----------------------------------------------
+User-facing:
+- Register/login/logout
+- Forgot password/reset flow
+- Protected dashboard
+- Submit activity
+- Start and attach proof
+- Track own submissions and statuses
+- Search activities
+- View monthly progress
+- View earned badges
+- View leaderboard/rank
+- Access help/FAQ/journey content
+
+Admin-facing:
+- Admin dashboard
+- Review pending submissions/proofs
+- Approve/reject with reason
+- Manage submission questions
+- Archive/soft-delete related operations (schema support)
+- Abuse flag context (schema support)
+
+Platform/infrastructure:
+- REST API backend
+- Role-based security model
+- SQL schema + migration scripts
+- Frontend modular layouts/components
+- Deployment descriptors for cloud hosting
+- Dockerized backend option
+- Documentation suite for architecture/API/ER
+
+README-WRITER NOTES (HOW TO USE THIS SUMMARY)
+----------------------------------------------
+Use this file as the source outline for your README sections:
+1. Intro + value proposition -> Project Overview
+2. Stack + architecture diagram text -> System Architecture
+3. Backend and frontend directories -> Structures sections
+4. User journey -> Auth + Activity + Proof workflows
+5. Admin journey -> Admin Approval section
+6. Gamification -> Points/Badges/Leaderboard section
+7. Developer section -> API structure + DB entities + deployment files
+8. Feature checklist -> Consolidated Feature Inventory
+
+END OF SUMMARY
