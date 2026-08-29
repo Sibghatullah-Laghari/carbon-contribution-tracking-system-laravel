@@ -1,54 +1,6 @@
 CARBON CONTRIBUTION TRACKING SYSTEM (CCTRS) - COMPLETE PROJECT SUMMARY
 =====================================================================
 
-Version Context
----------------
-- Workspace root: `carbon-contribution-tracking-system/`
-- Main backend: `backend/cctrs-backend` (Spring Boot)
-- Main frontend: `frontend` (React + Vite)
-- Supporting docs: `docs/` (architecture, API, ER, development)
-- Deployment hints: Vercel configs in frontend and root; Dockerfile for backend
-
-1) PROJECT OVERVIEW
--------------------
-CCTRS is a full-stack web platform that tracks environmentally positive user activities
-(e.g., tree-related actions, sustainability actions), validates evidence (proof),
-and rewards users with points and badges. It includes:
-- User-facing activity submission and progress views
-- Admin moderation, question/config management, and approvals
-- Analytics and leaderboard visibility
-- Authentication and protected role-based dashboards
-
-Primary goals:
-- Encourage eco-friendly behavior through gamification
-- Ensure trust via proof verification and moderation flows
-- Provide transparent ranking and monthly/overall progress
-- Support future growth with modular backend/frontend structure
-
-2) SYSTEM ARCHITECTURE
-----------------------
-Architecture style:
-- Client-server web architecture
-- Frontend SPA (React) communicates with REST APIs
-- Backend (Spring Boot) handles business logic, auth, persistence
-- Relational database with SQL schema + migration scripts
-
-High-level components:
-1. React Frontend (`frontend/src`)
-   - Route-based page modules for public/user/admin use cases
-   - API wrapper layer (`src/api`) for HTTP communication
-   - Context-driven auth state management (`src/context/AuthContext.jsx`)
-2. Spring Backend (`backend/cctrs-backend/src/main/java`)
-   - Layered design: Controllers -> Services -> Repositories -> Entities
-   - Security module for authentication/authorization
-   - Activity/proof/approval/points domain logic
-3. Database (`database/`, backend resources, running DB files under `data/`)
-   - Core entities for users, activities, proofs, points, badges, leaderboard
-   - Migration scripts for evolving schemas
-4. Documentation (`docs/`)
-   - Detailed API reference and architecture documentation
-   - ER diagram and implementation planning docs
-
 Operational flow:
 - User authenticates -> submits activity/proof -> system stores as pending ->
   admin verifies/rejects -> points awarded/revoked -> badges/leaderboard updated ->
