@@ -15,4 +15,4 @@ curl -X POST http://localhost:8080/api/users \
   -d '{"name":"Test User","email":"test@example.com","username":"testuser","role":"USER"}'
 
 echo ""
-echo "All tests completed"
+
