@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 /**
  * DTO for admin activity list — includes all activity fields plus the
- * submitting user's name, email, and username (via a LEFT JOIN on users).
  */
 public class AdminActivityDto {
 
