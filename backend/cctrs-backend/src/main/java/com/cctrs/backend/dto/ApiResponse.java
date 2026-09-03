@@ -7,7 +7,6 @@ public class ApiResponse<T> {
     private T data;
     private int statusCode;
 
-    // Constructors
     public ApiResponse() {
     }
 
