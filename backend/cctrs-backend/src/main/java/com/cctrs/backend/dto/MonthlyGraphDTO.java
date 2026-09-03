@@ -2,9 +2,6 @@ package com.cctrs.backend.dto;
 
 import java.util.List;
 
-/**
- * DTO for monthly graph data
- */
 public class MonthlyGraphDTO {
 
     private int year;
