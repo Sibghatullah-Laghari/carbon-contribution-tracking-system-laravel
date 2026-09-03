@@ -1,8 +1,5 @@
 package com.cctrs.backend.dto;
 
-/**
- * DTO for leaderboard entries
- */
 public class LeaderboardDTO {
 
     private int rank;
