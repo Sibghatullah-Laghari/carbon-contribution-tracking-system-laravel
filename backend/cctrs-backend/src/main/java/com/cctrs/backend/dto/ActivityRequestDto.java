@@ -13,7 +13,6 @@ public class ActivityRequestDto {
     @jakarta.validation.constraints.Min(value = 1, message = "Declared quantity must be at least 1")
     private Integer declaredQuantity;
 
-    // ✅ Default constructor
     public ActivityRequestDto() {
     }
 
