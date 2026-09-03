@@ -59,8 +59,3 @@ CCTRS is a full-stack platform for tracking eco-friendly user activities, collec
 ## Backend
 - Build: `./mvnw -DskipTests package` (or `mvnw.cmd` on Windows)
 - Run: `./mvnw spring-boot:run`
-
-## 8. Observed API Conventions
-- Most responses are wrapped in `ApiResponse<T>` payloads.
-- Main API prefixes: `/auth`, `/api`, `/admin`, `/public`.
-- Some controllers expose dual prefixes (example: `/report` and `/api/report`).
