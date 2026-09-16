@@ -23,3 +23,15 @@ To analyze whether a user’s environmental contribution is improving, stable, o
 
 ## Project Status
 Project initialization and system design phase.
+
+
+
+
+.......
+//////
+.....
+/
+
+
+
+
