@@ -27,10 +27,6 @@ Project initialization and system design phase.
 
 
 
-.......
-//////
-.....
-/
 
 
 
