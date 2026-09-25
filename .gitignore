@@ -40,19 +40,3 @@ out/
 # IDE/editor
 .idea/
 .vscode/
-*.iml
-
-# OS artifacts
-.DS_Store
-Thumbs.db
-Desktop.ini
-
-# Logs/crash dumps
-logs/
-*.log
-hs_err_pid*
-replay_pid*
-
-# Maven/Gradle build output
-target/
-**/target/
