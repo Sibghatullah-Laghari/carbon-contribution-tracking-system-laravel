@@ -21,8 +21,6 @@ To analyze whether a user’s environmental contribution is improving, stable, o
 - Database: supabase
 - Version Control: Git & GitHub
 
-## Project Status
-Project initialization and system design phase.
 
 
 
