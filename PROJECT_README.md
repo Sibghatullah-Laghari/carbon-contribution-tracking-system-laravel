@@ -48,7 +48,6 @@ CCTRS is a full-stack platform for tracking eco-friendly user activities, collec
 - `activities`: user activity declaration/proof/verification metadata
 - `proof_sessions`: short-lived proof-start sessions
 - `questions`: public Q&A submission and admin answers
-- `user_daily_limits`: anti-abuse counters (daily activity/tree limits)
 
 ## 7. Build and Run
 ## Frontend
