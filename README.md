@@ -13,7 +13,6 @@ To analyze whether a user’s environmental contribution is improving, stable, o
 - Admin verification workflow
 - Carbon point calculation
 - Monthly improvement analysis
-- Reports and dashboards
 
 ## Technology Stack
 - Backend: Java, Spring Boot
