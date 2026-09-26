@@ -376,11 +376,6 @@ README-WRITER NOTES (HOW TO USE THIS SUMMARY)
 ----------------------------------------------
 Use this file as the source outline for your README sections:
 1. Intro + value proposition -> Project Overview
-2. Stack + architecture diagram text -> System Architecture
-3. Backend and frontend directories -> Structures sections
-4. User journey -> Auth + Activity + Proof workflows
-5. Admin journey -> Admin Approval section
-6. Gamification -> Points/Badges/Leaderboard section
 7. Developer section -> API structure + DB entities + deployment files
 8. Feature checklist -> Consolidated Feature Inventory
 
