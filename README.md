@@ -19,10 +19,6 @@ To analyze whether a user’s environmental contribution is improving, stable, o
 - Backend: Java, Spring Boot
 - Frontend: HTML, CSS, Bootstrap, JavaScript
 - Database: supabase
-- Version Control: Git & GitHub
-
-
-
 
 
 
