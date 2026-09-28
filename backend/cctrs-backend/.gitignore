@@ -5,7 +5,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# Node (not typical for backend, but excluded for safety)
+# Node (not typical for backend, but excluded for safety.)
 node_modules/
 
 ### STS ###
