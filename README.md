@@ -14,10 +14,6 @@ To analyze whether a user’s environmental contribution is improving, stable, o
 - Carbon point calculation
 - Monthly improvement analysis
 
-## Technology Stack
-- Backend: Java, Spring Boot
-- Frontend: HTML, CSS, Bootstrap, JavaScript
-- Database: supabase
 
 
 
