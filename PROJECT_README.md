@@ -57,7 +57,4 @@ CCTRS is a full-stack platform for tracking eco-friendly user activities, collec
 
 ## Backend
 - Build: `./mvnw -DskipTests package` (or `mvnw.cmd` on Windows)
-- Run: `./mvnw spring-boot:run`
-
-
 
