@@ -53,7 +53,6 @@ CCTRS is a full-stack platform for tracking eco-friendly user activities, collec
 ## Frontend
 - Install: `npm install`
 - Dev: `npm run dev`
-- Build: `npm run build`
 
 ## Backend
 - Build: `./mvnw -DskipTests package` (or `mvnw.cmd` on Windows)
