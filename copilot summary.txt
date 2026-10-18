@@ -343,7 +343,7 @@ Potential minor/operational features inferred:
 CONSOLIDATED FEATURE INVENTORY (MAJOR + MINOR)
 -----------------------------------------------
 User-facing:
-- Register/login/logout
+- Register/login/logout.
 - Forgot password/reset flow
 - Protected dashboard
 - Submit activity
