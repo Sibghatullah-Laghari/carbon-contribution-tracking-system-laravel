@@ -24,7 +24,6 @@ CCTRS is a full-stack platform for tracking eco-friendly user activities, collec
 1. User signup starts with OTP request.
 2. OTP verification creates user account with `emailVerified=true`.
 3. Login issues JWT with role claim.
-4. OAuth2 (Google) can auto-provision user and redirect with JWT token.
 
 ### Activity Lifecycle
 1. User declares activity (`DECLARED`).
