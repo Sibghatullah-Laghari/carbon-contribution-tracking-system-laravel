@@ -13,9 +13,3 @@ To analyze whether a user’s environmental contribution is improving, stable, o
 - Admin verification workflow
 - Carbon point calculation
 - Monthly improvement analysis
-
-
-..
-
-
-
