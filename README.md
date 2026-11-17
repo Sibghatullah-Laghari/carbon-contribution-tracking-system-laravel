@@ -1,7 +1,7 @@
 # Carbon Contribution Tracking & Reward System (CCTRS)
 
 ## Overview
-The Carbon Contribution Tracking & Reward System (CCTRS) is a web-based application designed to track and analyze eco-friendly activities performed by users. The system allows users to submit activities with photographic and location proof, which are verified by an admin. Based on verified activities, carbon contribution points are awarded and analyzed on a monthly basis to determine behavioral improvement.
+The Carbon Contribution Tracking & Reward System (CCTRS) is a web-based application designed to track and analyze eco-friendly activities performed by users. The system allows users to submit activities with photographic and location proof, which are verified by an admin. Based on verified activities, carbon contribution points are awarded and analyzed on a monthly basis to determine behavioral improvement..
 
 ## Core Objective
 To analyze whether a user’s environmental contribution is improving, stable, or declining over time.
